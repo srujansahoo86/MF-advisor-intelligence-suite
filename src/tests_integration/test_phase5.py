@@ -94,6 +94,17 @@ def test_api_voice_booking(clean_env):
     assert data["booking_code"] is not None
     assert "Direct Plans Conversion" in data["message"]
 
+# 4b. Voice scheduler reports session_ended on a goodbye (no LLM needed)
+def test_api_voice_session_ended(clean_env):
+    client = clean_env
+
+    res = client.post("/api/voice", json={"transcript": "Thanks, that's all, bye"})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["session_ended"] is True
+    assert data["booking"] is None
+    assert data["message"] != ""
+
 # 5. Actions management check
 def test_api_actions_flow(clean_env):
     client = clean_env

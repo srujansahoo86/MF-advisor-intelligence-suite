@@ -147,7 +147,8 @@ def process_voice_transcript(req: TranscriptRequest):
             "booking": res.booking.model_dump() if res.booking else None,
             "booking_code": res.booking_code,
             "top_theme": res.top_theme,
-            "awaiting_response": res.awaiting_response
+            "awaiting_response": res.awaiting_response,
+            "session_ended": res.session_ended
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
