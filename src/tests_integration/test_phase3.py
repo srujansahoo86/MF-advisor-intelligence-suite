@@ -204,7 +204,7 @@ def test_prepare_intent_rag_lookup(clean_db):
     persistence = Persistence(clean_db)
     # Book a call first
     adapter = VoiceAdapter(db_path=clean_db)
-    resp_book = adapter.process("Book a call about HDFC fund fees")
+    resp_book = adapter.process("Book a call about HDFC fund fees on Monday morning")
     assert resp_book.booking is not None
 
     # Now ask to prepare
