@@ -49,6 +49,7 @@ class AgentResponse:
     booking_code: Optional[str] = None
     top_theme: Optional[str] = None
     awaiting_response: bool = False
+    session_ended: bool = False
 
 class BookingAgent:
     """Orchestrates voice booking, rescheduling, and preparation help."""
@@ -189,15 +190,24 @@ class BookingAgent:
         if has_pii:
             return AgentResponse(message=pii_msg)
 
-        # 2. Retrieve top theme (if available)
+        # 2. Goodbye check — ends the session regardless of any pending state,
+        # so a user can escape a "which slot?" loop by saying "never mind, bye".
+        if _is_goodbye(transcript):
+            self.persistence.set("pending_booking", {})
+            return AgentResponse(
+                message="Thank you for calling Kuvera. Have a great day!",
+                session_ended=True,
+            )
+
+        # 3. Retrieve top theme (if available)
         top_theme = self._get_top_theme()
 
-        # 3. If a booking/reschedule is awaiting a slot choice, this transcript is the answer
+        # 4. If a booking/reschedule is awaiting a slot choice, this transcript is the answer
         pending = self.persistence.get("pending_booking")
         if pending:
             return self._finalize_pending_booking(pending, transcript, top_theme)
 
-        # 4. Parse Intent
+        # 5. Parse Intent
         parsed = self.intent_parser.parse(transcript)
 
         # Guard against the LLM hallucinating a slot_preference when the user
@@ -205,7 +215,7 @@ class BookingAgent:
         if parsed.slot_preference and not _transcript_mentions_time(transcript):
             parsed.slot_preference = None
 
-        # 5. Handle Intents
+        # 6. Handle Intents
         if parsed.intent == "BOOK":
             topic = parsed.topic or "General Consultation"
 

@@ -346,3 +346,29 @@ def test_booking_agent_reasks_on_unmatched_slot_reply(clean_db):
     assert resp_book.booking.status == "CONFIRMED"
     assert resp_book.booking.date_time in Config.AVAILABLE_SLOTS
     assert persistence.get("pending_booking") == {}
+
+# 16. A goodbye phrase ends the session immediately (no LLM needed)
+def test_goodbye_ends_session(clean_db):
+    adapter = VoiceAdapter(db_path=clean_db)
+    resp = adapter.process("Thanks, that's all, bye")
+
+    assert resp.session_ended is True
+    assert resp.message != ""
+    assert resp.booking is None
+
+    assert Persistence(clean_db).get("pending_booking") == {}
+
+# 17. Saying goodbye while a slot choice is pending clears the pending
+# booking and ends the session without creating a booking (LLM-based)
+@skip_no_groq
+def test_goodbye_mid_pending_booking(clean_db):
+    persistence = Persistence(clean_db)
+    adapter = VoiceAdapter(db_path=clean_db)
+
+    resp_ask = adapter.process("I want to book my appointment")
+    assert persistence.get("pending_booking")["type"] == "BOOK"
+
+    resp_bye = adapter.process("Never mind, that's all, bye")
+    assert resp_bye.session_ended is True
+    assert resp_bye.booking is None
+    assert persistence.get("pending_booking") == {}
