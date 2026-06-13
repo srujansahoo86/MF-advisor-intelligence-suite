@@ -778,6 +778,17 @@
                 window.speechSynthesis.speak(utterance);
             } else if (SpeechRecognition && recognition) {
                 recognition.start();
+            } else {
+                // Neither speech synthesis nor recognition available — fall
+                // back to typed input immediately instead of getting stuck
+                // on the greeting status.
+                sessionActive = false;
+                if (voiceStatusText) voiceStatusText.textContent = "Status: Ready to listen";
+                const typed = prompt("Speech recognition is not supported in this browser. Please type your scheduling command:");
+                if (typed && typed.trim()) {
+                    transcriptText.textContent = `"${typed}"`;
+                    sendVoiceTranscript(typed);
+                }
             }
             return;
         }
