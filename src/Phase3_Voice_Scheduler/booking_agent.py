@@ -41,6 +41,7 @@ def _is_goodbye(transcript: str) -> bool:
         return False
     return bool(_GOODBYE_RE.search(transcript))
 
+
 @dataclass
 class AgentResponse:
     message: str
