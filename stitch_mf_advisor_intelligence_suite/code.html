@@ -171,7 +171,7 @@
 <span class="material-symbols-outlined text-primary text-4xl" data-icon="settings_voice">settings_voice</span>
                             Voice Commander
                         </h2>
-<span class="text-xs font-mono-data text-on-surface-variant uppercase tracking-widest pb-1">Status: Ready to listen</span>
+<span class="text-xs font-mono-data text-on-surface-variant uppercase tracking-widest pb-1" id="voice-status-text">Status: Ready to listen</span>
 </div>
 <div class="bg-surface-container-lowest p-md rounded-xl border border-primary/5 min-h-[120px] flex items-center shadow-inner">
 <p class="text-headline-lg text-on-surface-variant leading-relaxed italic" id="transcript-text">
@@ -634,8 +634,14 @@
     const micButton = document.getElementById('mic-button');
     const transcriptText = document.getElementById('transcript-text');
     const bookingCodeBadge = document.getElementById('booking-code-badge');
+    const voiceStatusText = document.getElementById('voice-status-text');
     let isListening = false;
     let recognition = null;
+
+    // Tracks whether the greeting/capabilities intro has been spoken for the
+    // current session. Reset to false once the agent ends the call
+    // (session_ended), so the next mic press starts a fresh greeting.
+    let sessionActive = false;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     // When true, the mic was auto re-opened so the user can answer a
@@ -649,6 +655,21 @@
     // re-opening the mic, so any residual audio/echo from the speakers
     // has time to settle and isn't picked up as the user's answer.
     const MIC_RESTART_DELAY_MS = 700;
+
+    // Picks a time-of-day greeting based on the user's device clock.
+    function getTimeGreeting() {
+        const h = new Date().getHours();
+        if (h < 12) return "Good morning";
+        if (h < 17) return "Good afternoon";
+        return "Good evening";
+    }
+
+    // Builds the static session-opening greeting + capabilities intro.
+    function buildGreetingMessage() {
+        return `${getTimeGreeting()}! I'm your Kuvera voice scheduling assistant. ` +
+            `I can help you book an advisor appointment, reschedule an existing one, ` +
+            `or tell you what to prepare for your call. What would you like to do?`;
+    }
 
     function normalizeForCompare(s) {
         return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -699,6 +720,7 @@
             micButton.classList.add('animate-pulse', 'bg-error', 'text-on-error');
             transcriptText.textContent = "Listening to your request...";
             transcriptText.classList.add('animate-pulse');
+            if (voiceStatusText) voiceStatusText.textContent = "Status: Listening...";
         };
 
         recognition.onend = () => {
@@ -706,6 +728,7 @@
             micButton.classList.add('pulse-primary');
             micButton.classList.remove('animate-pulse', 'bg-error', 'text-on-error');
             transcriptText.classList.remove('animate-pulse');
+            if (voiceStatusText && sessionActive) voiceStatusText.textContent = "Status: Ready to listen";
         };
 
         recognition.onresult = async (event) => {
@@ -731,6 +754,34 @@
     }
 
     micButton.addEventListener('click', () => {
+        // First press of a session: speak the greeting + capabilities intro,
+        // then auto-open the mic once it finishes (no backend call yet).
+        if (!sessionActive) {
+            sessionActive = true;
+
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            const greeting = buildGreetingMessage();
+            transcriptText.textContent = greeting;
+            if (voiceStatusText) voiceStatusText.textContent = "Status: Greeting...";
+
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(greeting);
+                if (SpeechRecognition && recognition) {
+                    utterance.onend = () => {
+                        if (voiceStatusText) voiceStatusText.textContent = "Status: Listening...";
+                        listenAfterSpeechEnds();
+                    };
+                }
+                window.speechSynthesis.speak(utterance);
+            } else if (SpeechRecognition && recognition) {
+                recognition.start();
+            }
+            return;
+        }
+
         if (SpeechRecognition) {
             if (isListening) {
                 recognition.stop();
@@ -767,6 +818,11 @@
                     bookingCodeBadge.textContent = `Booking Code: ${data.booking_code}`;
                 }
 
+                if (data.session_ended) {
+                    sessionActive = false;
+                    if (voiceStatusText) voiceStatusText.textContent = "Status: Call ended — tap mic to start again";
+                }
+
                 // Read confirmation back aloud (TTS)
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
@@ -776,7 +832,8 @@
                     // slot works for you?"), keep the conversation going: re-open
                     // the mic automatically once the assistant finishes speaking,
                     // so the user doesn't have to press the mic button again.
-                    if (data.awaiting_response && recognition) {
+                    // Never auto-reopen once the agent has said goodbye.
+                    if (data.awaiting_response && !data.session_ended && recognition) {
                         awaitingSlotChoice = true;
                         lastSpokenMessage = data.message;
                         utterance.onend = () => {
@@ -785,6 +842,11 @@
                     } else {
                         awaitingSlotChoice = false;
                         lastSpokenMessage = "";
+                        if (data.session_ended) {
+                            utterance.onend = () => {
+                                if (voiceStatusText) voiceStatusText.textContent = "Status: Call ended — tap mic to start again";
+                            };
+                        }
                     }
 
                     window.speechSynthesis.speak(utterance);
