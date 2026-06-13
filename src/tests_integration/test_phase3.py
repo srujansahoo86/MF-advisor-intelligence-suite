@@ -384,3 +384,44 @@ def test_goodbye_mid_pending_booking(clean_db):
     assert resp_bye.session_ended is True
     assert resp_bye.booking is None
     assert persistence.get("pending_booking") == {}
+
+
+# 18. Booking and releasing a slot still works with the new storage shape
+def test_slot_manager_rolling_availability(clean_db):
+    sm = SlotManager(db_path=clean_db)
+    slot = "Monday 10:00 AM"
+
+    assert sm.is_available(slot) is True
+    sm.mark_booked(slot)
+    assert sm.is_available(slot) is False
+    assert slot not in sm.get_available_slots()
+
+    sm.release_slot(slot)
+    assert sm.is_available(slot) is True
+    assert slot in sm.get_available_slots()
+
+
+# 19. A booking whose occurrence date is in the past is pruned, freeing the
+# slot label for its next upcoming occurrence
+def test_slot_manager_prunes_expired_bookings(clean_db):
+    sm = SlotManager(db_path=clean_db)
+    persistence = Persistence(clean_db)
+    slot = "Tuesday 3:00 PM"
+
+    persistence.set("booked_slots", [{"slot": slot, "date": "2000-01-01"}])
+
+    assert sm.is_available(slot) is True
+    assert slot in sm.get_available_slots()
+    assert persistence.get("booked_slots") == []
+
+
+# 20. Legacy booked_slots (flat list of label strings) is treated as empty
+def test_slot_manager_ignores_legacy_string_entries(clean_db):
+    sm = SlotManager(db_path=clean_db)
+    persistence = Persistence(clean_db)
+
+    persistence.set("booked_slots", ["Monday 10:00 AM", "Friday 3:00 PM"])
+
+    assert sm.get_booked_slots() == []
+    assert persistence.get("booked_slots") == []
+    assert sm.get_available_slots() == Config.AVAILABLE_SLOTS

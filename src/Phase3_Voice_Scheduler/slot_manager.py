@@ -1,8 +1,12 @@
+from datetime import datetime, timedelta, date
 from typing import Optional
 
 from langchain_groq import ChatGroq
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.persistence import Persistence
+
+_WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
 
 class SlotManager:
     """Manages advisor appointment slots and resolves fuzzy user slot preferences."""
@@ -11,35 +15,58 @@ class SlotManager:
         self.persistence = Persistence(db_path)
         self.llm = ChatGroq(model_name=Config.LLM_MODEL, temperature=0.0)
 
-    def get_booked_slots(self) -> list[str]:
-        """Retrieves list of booked slots from SQLite."""
+    def _occurrence_date(self, slot_label: str) -> str:
+        """Computes the ISO date (YYYY-MM-DD) of the next upcoming occurrence
+        of a '<Weekday> <H:MM AM/PM>' slot label, relative to now."""
+        weekday_name, time_str = slot_label.split(" ", 1)
+        target_weekday = _WEEKDAYS.index(weekday_name)
+        slot_time = datetime.strptime(time_str, "%I:%M %p").time()
+
+        now = datetime.now()
+        days_ahead = (target_weekday - now.weekday()) % 7
+        if days_ahead == 0 and now.time() >= slot_time:
+            days_ahead = 7
+        return (now + timedelta(days=days_ahead)).date().isoformat()
+
+    def get_booked_slots(self) -> list[dict]:
+        """Retrieves booked slots from SQLite as a list of {"slot", "date"}
+        entries, pruning any whose occurrence date has already passed and
+        discarding any legacy (pre-rolling) flat-string entries."""
         booked = self.persistence.get("booked_slots")
         if not booked or not isinstance(booked, list):
             return []
-        return booked
+
+        today = date.today().isoformat()
+        valid = [
+            b for b in booked
+            if isinstance(b, dict) and b.get("date", "") >= today
+        ]
+        if valid != booked:
+            self.persistence.set("booked_slots", valid)
+        return valid
 
     def is_available(self, slot: str) -> bool:
-        """Returns True if the slot is currently free."""
-        return slot not in self.get_booked_slots()
+        """Returns True if the slot's next upcoming occurrence is currently free."""
+        return not any(b["slot"] == slot for b in self.get_booked_slots())
 
     def mark_booked(self, slot: str) -> None:
-        """Marks a slot as booked in SQLite."""
+        """Marks a slot's next upcoming occurrence as booked in SQLite."""
         booked = self.get_booked_slots()
-        if slot not in booked:
-            booked.append(slot)
+        if not any(b["slot"] == slot for b in booked):
+            booked.append({"slot": slot, "date": self._occurrence_date(slot)})
             self.persistence.set("booked_slots", booked)
 
     def release_slot(self, slot: str) -> None:
-        """Releases a slot, making it available again."""
+        """Releases a slot, making its next upcoming occurrence available again."""
         booked = self.get_booked_slots()
-        if slot in booked:
-            booked.remove(slot)
-            self.persistence.set("booked_slots", booked)
+        filtered = [b for b in booked if b["slot"] != slot]
+        if filtered != booked:
+            self.persistence.set("booked_slots", filtered)
 
     def get_available_slots(self) -> list[str]:
-        """Returns list of slots that are not yet booked."""
-        booked = self.get_booked_slots()
-        return [s for s in Config.AVAILABLE_SLOTS if s not in booked]
+        """Returns list of slot labels whose next upcoming occurrence is not yet booked."""
+        booked_labels = {b["slot"] for b in self.get_booked_slots()}
+        return [s for s in Config.AVAILABLE_SLOTS if s not in booked_labels]
 
     def resolve(self, slot_preference: str | None) -> str:
         """
