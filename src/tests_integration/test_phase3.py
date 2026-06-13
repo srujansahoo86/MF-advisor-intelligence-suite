@@ -8,6 +8,12 @@ from src.Phase3_Voice_Scheduler.booking_agent import BookingAgent
 from src.Phase3_Voice_Scheduler.voice_adapter import VoiceAdapter
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.persistence import Persistence
+from unittest.mock import patch
+from src.Phase3_Voice_Scheduler.intent_parser import ParsedIntent
+from src.Phase3_Voice_Scheduler.booking_agent import (
+    _transcript_mentions_time,
+    _is_goodbye,
+)
 
 TEST_DB_PATH = "./data/test_phase3.db"
 
@@ -54,6 +60,38 @@ def test_slot_manager_returns_valid_slot(clean_db):
     sm = SlotManager(db_path=clean_db)
     res = sm.resolve(None)
     assert res in Config.AVAILABLE_SLOTS
+
+# 14. Time-word detector used to guard against hallucinated slot_preference
+def test_transcript_mentions_time_detects_day_and_time_words():
+    assert _transcript_mentions_time("book a call for Monday morning") is True
+    assert _transcript_mentions_time("can we do this at 3pm") is True
+    assert _transcript_mentions_time("can we do this at 3 PM") is True
+    assert _transcript_mentions_time("I want to book my appointment") is False
+    assert _transcript_mentions_time("") is False
+
+# 15. handle() discards a hallucinated slot_preference when the transcript
+# has no day/time words, falling back to the ask-for-options flow
+def test_handle_discards_hallucinated_slot_preference(clean_db):
+    agent = BookingAgent(db_path=clean_db)
+
+    with patch.object(
+        agent.intent_parser,
+        "parse",
+        return_value=ParsedIntent(
+            intent="BOOK",
+            topic="General Consultation",
+            slot_preference="Monday 10:00 AM",
+        ),
+    ):
+        resp = agent.handle("I want to book my appointment")
+
+    assert resp.booking is None
+    assert resp.booking_code is None
+    assert resp.awaiting_response is True
+    assert any(slot in resp.message for slot in Config.AVAILABLE_SLOTS)
+
+    pending = Persistence(clean_db).get("pending_booking")
+    assert pending["type"] == "BOOK"
 
 # 5. Intent parser BOOK (LLM-based)
 @skip_no_groq

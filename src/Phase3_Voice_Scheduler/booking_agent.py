@@ -13,6 +13,34 @@ from .intent_parser import IntentParser
 from .slot_manager import SlotManager
 from src.Phase4_MCP_Orchestration.orchestrator import MCPOrchestrator
 
+_TIME_WORD_RE = re.compile(
+    r"\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|"
+    r"\d{1,2}(:\d{2})?\s*(am|pm)|morning|afternoon|evening|noon|tonight)\b",
+    re.IGNORECASE,
+)
+
+
+def _transcript_mentions_time(transcript: str) -> bool:
+    """Returns True if the transcript contains a day-of-week or time-of-day word."""
+    if not transcript:
+        return False
+    return bool(_TIME_WORD_RE.search(transcript))
+
+
+_GOODBYE_RE = re.compile(
+    r"\b(bye|goodbye|good bye|that'?s all|thats all|nothing else|"
+    r"no(?:,)? (?:that'?s|thats) (?:all|it)|that'?s it|we'?re done|"
+    r"i'?m done|end (?:the )?call|hang up)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_goodbye(transcript: str) -> bool:
+    """Returns True if the transcript signals the user wants to end the call."""
+    if not transcript:
+        return False
+    return bool(_GOODBYE_RE.search(transcript))
+
 @dataclass
 class AgentResponse:
     message: str
@@ -170,6 +198,11 @@ class BookingAgent:
 
         # 4. Parse Intent
         parsed = self.intent_parser.parse(transcript)
+
+        # Guard against the LLM hallucinating a slot_preference when the user
+        # never actually mentioned a day/time — force the ask-for-options flow.
+        if parsed.slot_preference and not _transcript_mentions_time(transcript):
+            parsed.slot_preference = None
 
         # 5. Handle Intents
         if parsed.intent == "BOOK":
