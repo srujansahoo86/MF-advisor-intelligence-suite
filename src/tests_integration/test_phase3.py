@@ -358,6 +358,18 @@ def test_goodbye_ends_session(clean_db):
 
     assert Persistence(clean_db).get("pending_booking") == {}
 
+# 16b. A goodbye phrase clears a populated pending_booking without needing the LLM
+def test_goodbye_clears_pending_booking(clean_db):
+    persistence = Persistence(clean_db)
+    persistence.set("pending_booking", {"type": "BOOK", "topic": "General Consultation"})
+
+    adapter = VoiceAdapter(db_path=clean_db)
+    resp = adapter.process("Thanks, that's all, bye")
+
+    assert resp.session_ended is True
+    assert resp.booking is None
+    assert persistence.get("pending_booking") == {}
+
 # 17. Saying goodbye while a slot choice is pending clears the pending
 # booking and ends the session without creating a booking (LLM-based)
 @skip_no_groq
