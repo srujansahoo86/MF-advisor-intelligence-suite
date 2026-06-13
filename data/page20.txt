@@ -1,0 +1,66 @@
+Definitions
+Fund Manager
+This is the minimum investment amount for a new investor in a mutual fund scheme. 
+Minimum additional amount This is the minimum investment amount for an existing investor in a mutual fund scheme.
+SIP
+NAV
+Benchmark
+Entry Load
+Exit Load
+Standard Deviation
+Sharpe Ratio
+Beta
+AUM
+Holdings
+Nature of Scheme
+Portfolio Turnover Ratio 
+Yield to Maturity (YTM)
+Modified Duration
+Total Expense ratio
+Application amount for fresh 
+subscription
+A measure of how frequently assets within a fund are bought and sold by the managers. Portfolio turnover is calculated by taking either the total 
+amount of new securities purchased or the amount of securities sold - whichever is less - over a particular period, divided by the total net asset 
+value (NAV) of the fund. The measurement is usually reported for a 12-month time period. 
+The Yield to Maturity or the YTM is the rate of return anticipated on a bond if held until maturity. YTM is expressed as an annual rate. The YTM factors in the 
+bond's current market price, par value, coupon interest rate and time to maturity. 
+Modified duration is the price sensitivity and the percentage change in price for a unit change in yield. 
+The total expense ratio (TER) is a measure of the total cost of a fund to the investor. Total costs may include various fees (purchase, redemption, auditing) 
+and other expenses. The TER, calculated by dividing the total annual cost by the fund'stotal assets averaged over that year, is denoted as a percentage. 
+Toll Free: 1800-266-7790 | Email: mf@ppfas.com
+Call:  1800-266-8909 or 91-22-6140-6538 | E-Mail : partners@ppfas.com
+Registered Oﬃce: 81/82, 8th Floor, Sakhar Bhavan, Ramnath Goenka Marg, 230, Nariman Point, Mumbai - 400 021, Maharashtra, India.
+Derivative Derivative includes (i) a security derived from a debt instrument, share, loan whether secured or unsecured, risk instrument or contract for differences or any 
+other form of security; (ii) a contract which derives its value from the prices, or index of prices, or underlying securities.
+For details of Branch office and ISC, kindly refer link - https://amc.ppfas.com/contact/
+A mutual fund may have a sales charge or load at the time of entry and/or exit to compensate the distributor/agent. Entry load is charged at the time an investor purchases the units of a 
+mutual fund. The entry load is added to the prevailing NAV at the time of investment. For instance, if the NAV is Rs. 100 and the entry load is 1 %, the investor will enter the fund at Rs. 101.
+Note - As per clause 11.7.1 of SEBI Master Circular for Mutual Funds, there shall be no entry load for all Mutual Fund schemes 
+An employee of the asset management company such as a mutual fund or life insurer, who manages investments of the scheme. He is usually part of a larger 
+team of fund managers and research analysts. 
+SIP or systematic investment plan works on the principle of making periodic investments of a fixed sum. It works similar to a recurring bank deposit. For instance, 
+an investor may opt for an SIP that invests Rs 500 every 15th of the month in an equity fund for a period of three years. 
+The NAV or the net asset value is the total asset value per unit of the mutual fund after deducting all related and permissible expenses. The NAV is calculated at 
+the end of every business day. It is the value at which the investor enters or exits the mutual fund. 
+A group of securities, usually a market index, whose performance is used as a standard or benchmark to measure investment performance of mutual funds, 
+among other investments. Some typical benchmarks include the Nifty, Sensex, BSE200, BSE500, 10-Year Gsec. 
+Exit load is charged at the time an investor redeems the units of a mutual fund. The exit load is deducted from the prevailing NAV at the time of redemption. 
+For instance, if the NAV is Rs. 100 and the exit load is 1 %, the redemption price would be Rs.99 per unit. 
+Standard deviation is a statistical measure of the range of an investment's performance. When a mutual fund has a high standard deviation, its means its range 
+of performance is wide, implying greater volatility. 
+The Sharpe Ratio, named after its founder, the Nobel Laureate William Sharpe, is a measure of risk-adjusted returns. It is calculated using standard deviation 
+and excess return to determine reward per unit of risk. 
+Beta is a measure of an investment's volatility vis-a-vis the market. Beta of less than 1 means that the security will be less volatile than the market. A beta of 
+greater than 1 implies that the security's price will be more volatile than the market. 
+AUM or assets under management refers to the recent / updated cumulative market value of investments managed by a mutual fund or any investment firm. 
+The holdings or the portfolio is a mutual fund's latest or updated reported statement of investments/securities. These are usually displayed in terms of percentage 
+to net assets or the rupee value or both. The objective is to give investors an idea of where their money is being invested by the fund manager. 
+The investment objective and underlying investments determine the nature of the mutual fund scheme. For instance, a mutual fund that aims at generating capital 
+appreciation by investing in stock markets is an equity fund or growth fund. Likewise, a mutual fund that aims at capital preservation by investing in debt markets 
+is a debt fund or income fund. Each of these categories may have sub-categories. 
+Rating Profile Mutual funds invest in securities after evaluating their creditworthiness as disclosed by the ratings. A depiction of the mutual fund in various investments based 
+on their ratings becomes the rating profile of the fund. Typically, this is a feature of debt funds. 
+MUTUAL FUND
+PPFAS
+There’s only one right way ©
+FACT SHEET - MAY 2026

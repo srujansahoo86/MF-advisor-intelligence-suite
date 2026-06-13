@@ -1,0 +1,43 @@
+review_id,date,rating,source,review_text
+R001,2026-03-20,2,Google Play,I dont understand the expense ratio thing. App shows 0.5% but my returns look lower than expected. Are there hidden charges nobody told me about?
+R002,2026-03-22,3,App Store,Why is there a difference between direct and regular plan? Same fund but different NAV. Someone please explain in simple words.
+R003,2026-03-24,2,Trustpilot,Got charged an exit load when I redeemed early. There was no clear warning before I confirmed. Felt cheated honestly.
+R004,2026-03-26,4,Google Play,"Love that direct plans have lower expense ratio, saved me money vs my old bank agent. But the fee breakup screen could be clearer."
+R005,2026-03-28,2,Google Play,What is this stamp duty deduction on my SIP? Small amount but no explanation anywhere in the app.
+R006,2026-03-30,3,in-app,"Expense ratio, exit load, stamp duty, TER... too many fee terms and no glossary. Please add a simple fee explainer."
+R007,2026-04-01,1,Trustpilot,They keep talking about TER but my statement doesnt match. Where exactly is the fee being cut from? Very confusing.
+R008,2026-04-03,4,App Store,"Good app for low cost investing, direct funds save a lot over time. Just wish fees were explained upfront before investing."
+R009,2026-04-05,2,Google Play,Is the platform itself charging me anything? I read its free but then what is this small deduction every month. Confusing.
+R010,2026-04-07,1,Google Play,KYC stuck for 10 days. They asked my PAN ABCDE1234F twice even though I completed KYC last year with another app. Useless process.
+R011,2026-04-09,2,App Store,Onboarding is painful. Video KYC failed 4 times due to lighting. Almost gave up.
+R012,2026-04-10,3,Trustpilot,KYC verification took longer than promised but support eventually fixed it. 3 stars for the delay.
+R013,2026-04-12,1,Google Play,"Priya Sharma here. My KYC shows pending for 2 weeks, my SIP could not start because of it. Extremely frustrating."
+R014,2026-04-14,2,in-app,Re-KYC asked again randomly. Had to upload Aadhaar and PAN once more. Why is this not stored properly?
+R015,2026-04-16,1,Google Play,"Redemption of Rs 50000 stuck for 8 days. Please call me back on 9123456780, no one is responding to my tickets."
+R016,2026-04-18,2,Trustpilot,Withdrawal took way longer than the 3 days they promised. Money finally came after a week. Stressful when you need funds.
+R017,2026-04-20,1,App Store,Worst experience. Been calling +91 98765 43210 for a week about my redemption and zero response.
+R018,2026-04-22,2,Google Play,Partial redemption processed but the rest is pending with no status update. Communication is poor during withdrawals.
+R019,2026-04-24,3,in-app,Redemption worked but the T+ timeline shown in app was misleading. Set correct expectations please.
+R020,2026-04-26,2,Google Play,My SIP of 5000 did not get deducted this month and the app shows no reason. Had to start it manually again.
+R021,2026-04-28,1,App Store,"SIP mandate failed silently. No SMS, no email, nothing. Found out only when I checked manually after a month."
+R022,2026-04-30,4,Google Play,SIP automation is smooth most months and pause feature is handy. Lost one star for the occasional mandate hiccup.
+R023,2026-05-02,3,Trustpilot,"Wanted to change my SIP date from 5th to 10th, took 2 cycles to reflect. Should be instant."
+R024,2026-05-04,2,Google Play,"Step-up SIP did not increase as scheduled. Reached support from rajesh.kumar88@gmail.com twice, still no fix."
+R025,2026-05-06,2,Google Play,"App crashes every time I open the portfolio tab after the latest update. Pixel 7, Android 15."
+R026,2026-05-08,4,App Store,"Clean interface, easy to navigate, goal tracking is nice. Minor lag when loading charts but overall good."
+R027,2026-05-10,3,Google Play,"Dark mode finally added, thank you. But the app logs me out too frequently."
+R028,2026-05-12,2,Trustpilot,"Folio number 1234567/89 shows wrong balance after the update. A refresh sometimes fixes it, sometimes not. Buggy."
+R029,2026-05-14,5,Google Play,"Honestly the best DIY investing app I have used. Fast, clean, and no pushy sales calls. Keep it up."
+R030,2026-05-16,1,Trustpilot,"Support is basically a chatbot loop. Cannot reach a human. Raised a ticket 6 days ago, still open."
+R031,2026-05-18,2,Google Play,Email support replies after 4-5 days with copy paste answers that dont address the actual issue.
+R032,2026-05-19,4,App Store,"When I finally got a human on chat, they resolved my issue quickly. Just wish the wait was shorter."
+R033,2026-05-21,1,Google Play,No phone support at all. For a money app that is unacceptable. I stay in Banjara Hills Hyderabad 500034 and even the cheque was delayed.
+R034,2026-05-23,3,Google Play,Portfolio value updates a day late. NAV for my funds shows yesterdays figure during market hours. Confusing for tracking.
+R035,2026-05-25,2,Trustpilot,Invested amount reflected after 2 days. Made me anxious thinking the money was lost. Show pending transactions clearly.
+R036,2026-05-27,3,App Store,XIRR calculation seems off compared to my own sheet. Or maybe NAV update lag is causing the mismatch.
+R037,2026-05-29,5,Google Play,Switched from a regular plan via agent to direct here and my costs dropped noticeably. Very happy with the transparency on holdings.
+R038,2026-05-31,5,App Store,Great for beginners. Started my first SIP in minutes once KYC was done. The explainer content is helpful.
+R039,2026-06-02,4,Trustpilot,"Reliable for long term SIP investing. No spam, no commissions. Would recommend to friends starting out."
+R040,2026-06-04,3,Google Play,Can the app just tell me which fund will give the highest returns next year? Why no buy recommendations?
+R041,2026-06-06,2,App Store,"I want the app to tell me whether to sell my equity funds now given the market. It refuses to advise, what is the point?"
+R042,2026-06-08,3,Google Play,ELSS lock-in was not clearly flagged when I invested for tax saving. Found out about the 3 year lock only later. Add a warning.
