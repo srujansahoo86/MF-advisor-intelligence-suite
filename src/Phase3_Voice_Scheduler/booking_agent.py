@@ -139,6 +139,12 @@ class BookingAgent:
             "topic": booking.topic,
         })
 
+    def _queue_mcp_followups(self, booking: Booking, top_theme: Optional[str]) -> None:
+        """Queues all required MCP actions for a confirmed booking/reschedule."""
+        self._queue_calendar_hold(booking)
+        self._queue_doc_append(booking, top_theme)
+        self._queue_email_draft(booking)
+
     def _finalize_pending_booking(self, pending: dict, transcript: str, top_theme: Optional[str]) -> AgentResponse:
         """Resolves the user's slot choice and completes a pending BOOK or RESCHEDULE."""
         new_slot = self.slot_manager.match_pending_reply(transcript)

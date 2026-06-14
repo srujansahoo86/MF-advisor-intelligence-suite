@@ -488,3 +488,22 @@ def test_queue_email_draft_for_booking(clean_db):
     assert "KV-TEST" in payload["subject"]
     assert "Exit load query" in payload["subject"]
     assert payload["topic"] == "Exit load query"
+
+
+# 23. _queue_mcp_followups queues Calendar Hold, Doc Append, and Email Draft Generator
+def test_queue_mcp_followups_queues_all_three_actions(clean_db):
+    persistence = Persistence(clean_db)
+    agent = BookingAgent(db_path=clean_db)
+    booking = Booking(
+        booking_code="KV-TEST",
+        topic="Exit load query",
+        date_time="Monday 10:00 AM",
+        status="CONFIRMED",
+    )
+
+    agent._queue_mcp_followups(booking, "Exit Load Confusion")
+
+    pending_actions = persistence.get_pending_actions()
+    tool_names = {a.tool_name for a in pending_actions}
+    assert tool_names == {"Calendar Hold Creator", "Doc Append", "Email Draft Generator"}
+    assert len(pending_actions) == 3
