@@ -8,6 +8,7 @@ from src.Phase3_Voice_Scheduler.booking_agent import BookingAgent
 from src.Phase3_Voice_Scheduler.voice_adapter import VoiceAdapter
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.persistence import Persistence
+from src.Phase0_Shared_Foundation.schemas import Booking
 from unittest.mock import patch
 from src.Phase3_Voice_Scheduler.intent_parser import ParsedIntent
 from src.Phase3_Voice_Scheduler.booking_agent import (
@@ -425,3 +426,41 @@ def test_slot_manager_ignores_legacy_string_entries(clean_db):
     assert sm.get_booked_slots() == []
     assert persistence.get("booked_slots") == []
     assert sm.get_available_slots() == Config.AVAILABLE_SLOTS
+
+
+# 21. _queue_doc_append appends a dated markdown entry referencing the booking
+def test_queue_doc_append_writes_shared_notes_entry(clean_db):
+    persistence = Persistence(clean_db)
+    persistence.set("latest_pulse", {
+        "top_themes": [{"theme_name": "Exit Load Confusion", "description": "Users confused about exit loads."}],
+        "user_quotes": ["What is the exit load?"],
+        "key_observation": "Many users confused about exit loads.",
+        "action_ideas": ["a", "b", "c"],
+        "word_count": 10,
+    })
+    persistence.set("latest_fee_explainer", {
+        "bullets": ["b1", "b2", "b3", "b4", "b5", "b6"],
+        "source_links": ["https://www.amfiindia.com/x", "https://www.sebi.gov.in/y"],
+        "last_checked": "Last checked: 2026-06-10",
+    })
+
+    agent = BookingAgent(db_path=clean_db)
+    booking = Booking(
+        booking_code="KV-TEST",
+        topic="Exit load query",
+        date_time="Monday 10:00 AM",
+        status="CONFIRMED",
+    )
+
+    agent._queue_doc_append(booking, "Exit Load Confusion")
+
+    pending_actions = persistence.get_pending_actions()
+    doc_actions = [a for a in pending_actions if a.tool_name == "Doc Append"]
+    assert len(doc_actions) == 1
+
+    payload = doc_actions[0].payload
+    assert payload["file_path"] == Config.SHARED_NOTES_PATH
+    assert "KV-TEST" in payload["content"]
+    assert "Exit Load Confusion" in payload["content"]
+    assert "Many users confused about exit loads." in payload["content"]
+    assert "Last checked: 2026-06-10" in payload["content"]

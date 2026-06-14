@@ -22,6 +22,7 @@ class Config:
     
     # Phase 3 — Voice Scheduler
     ADVISOR_SECURE_LINK = "https://kuvera.in/secure-profile"
+    SHARED_NOTES_PATH = os.getenv("SHARED_NOTES_PATH", "./data/shared_notes.md")
     AVAILABLE_SLOTS = [
         "Monday 10:00 AM", "Monday 2:00 PM",
         "Tuesday 10:00 AM", "Tuesday 3:00 PM",

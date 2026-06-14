@@ -2,8 +2,10 @@ import re
 import random
 import string
 from dataclasses import dataclass
+from datetime import date
 from typing import Optional
 
+from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.persistence import Persistence
 from src.Phase0_Shared_Foundation.schemas import Booking
 from src.Phase1_FAQ_Chatbot.rag_engine import get_rag_engine
@@ -104,6 +106,29 @@ class BookingAgent:
             "start_time": booking.date_time,
             "duration_minutes": 30,
             "attendees": ["advisor@kuvera.in"],
+        })
+
+    def _queue_doc_append(self, booking: Booking, top_theme: Optional[str]) -> None:
+        """Queues a Doc Append action logging this booking to the shared notes doc."""
+        pulse = self.persistence.get("latest_pulse")
+        fee_explainer = self.persistence.get("latest_fee_explainer")
+
+        lines = [
+            f"## {date.today().isoformat()} — Booking {booking.booking_code}",
+            f"- Topic: {booking.topic}",
+            f"- Slot: {booking.date_time}",
+        ]
+        if top_theme:
+            lines.append(f"- Top Theme: {top_theme}")
+        if pulse and pulse.get("key_observation"):
+            lines.append(f"- Pulse Observation: {pulse['key_observation']}")
+        if fee_explainer and fee_explainer.get("last_checked"):
+            lines.append(f"- Fee Explainer: {fee_explainer['last_checked']}")
+        lines.append("")
+
+        self.orchestrator.queue_action("Doc Append", {
+            "file_path": Config.SHARED_NOTES_PATH,
+            "content": "\n".join(lines),
         })
 
     def _finalize_pending_booking(self, pending: dict, transcript: str, top_theme: Optional[str]) -> AgentResponse:
