@@ -162,6 +162,16 @@ def test_booking_agent_full_flow(clean_db):
     assert len(book_holds) == 1
     assert book_holds[0].payload["start_time"] == resp.booking.date_time
 
+    # A Doc Append action was queued referencing the booking code
+    book_docs = [a for a in pending_actions if a.tool_name == "Doc Append" and resp.booking_code in a.payload.get("content", "")]
+    assert len(book_docs) == 1
+    assert book_docs[0].payload["file_path"] == Config.SHARED_NOTES_PATH
+
+    # An Email Draft Generator action was queued referencing the booking code
+    book_emails = [a for a in pending_actions if a.tool_name == "Email Draft Generator" and resp.booking_code in a.payload.get("subject", "")]
+    assert len(book_emails) == 1
+    assert book_emails[0].payload["recipient"] == "advisor@kuvera.in"
+
     # Process RESCHEDULE
     resched_resp = adapter.process(f"Can I reschedule {resp.booking_code} to Friday afternoon?")
     assert resched_resp.booking is not None
@@ -183,7 +193,14 @@ def test_booking_agent_full_flow(clean_db):
     resched_holds = [a for a in pending_actions if a.tool_name == "Calendar Hold Creator" and resched_resp.booking_code in a.payload.get("title", "")]
     assert len(resched_holds) == 1
     assert resched_holds[0].payload["start_time"] == resched_resp.booking.date_time
-    assert len(pending_actions) == 2
+
+    resched_docs = [a for a in pending_actions if a.tool_name == "Doc Append" and resched_resp.booking_code in a.payload.get("content", "")]
+    assert len(resched_docs) == 1
+
+    resched_emails = [a for a in pending_actions if a.tool_name == "Email Draft Generator" and resched_resp.booking_code in a.payload.get("subject", "")]
+    assert len(resched_emails) == 1
+
+    assert len(pending_actions) == 6
 
 # 9. Voice adapter boundaries and grace fallbacks
 def test_voice_adapter_empty():
@@ -252,6 +269,14 @@ def test_booking_agent_ask_then_book(clean_db):
     assert len(book_holds) == 1
     assert book_holds[0].payload["start_time"] == resp_book.booking.date_time
 
+    book_docs = [a for a in pending_actions if a.tool_name == "Doc Append" and resp_book.booking_code in a.payload.get("content", "")]
+    assert len(book_docs) == 1
+
+    book_emails = [a for a in pending_actions if a.tool_name == "Email Draft Generator" and resp_book.booking_code in a.payload.get("subject", "")]
+    assert len(book_emails) == 1
+
+    assert len(pending_actions) == 3
+
 # 12. RESCHEDULE with no slot preference asks first, then reschedules on reply (LLM-based)
 @skip_no_groq
 def test_booking_agent_ask_then_reschedule(clean_db):
@@ -273,6 +298,12 @@ def test_booking_agent_ask_then_reschedule(clean_db):
     assert len(old_holds) == 1
     assert old_holds[0].payload["start_time"] == old_slot
 
+    old_docs = [a for a in pending_actions if a.tool_name == "Doc Append" and old_code in a.payload.get("content", "")]
+    assert len(old_docs) == 1
+
+    old_emails = [a for a in pending_actions if a.tool_name == "Email Draft Generator" and old_code in a.payload.get("subject", "")]
+    assert len(old_emails) == 1
+
     # Ask to reschedule without specifying a new date/time
     resp_ask = adapter.process(f"Can I reschedule {old_code}?")
     assert resp_ask.booking is None
@@ -289,7 +320,7 @@ def test_booking_agent_ask_then_reschedule(clean_db):
     assert pending["old_slot"] == old_slot
 
     # No new Calendar Hold Creator action queued yet — reschedule not confirmed
-    assert len(persistence.get_pending_actions()) == 1
+    assert len(persistence.get_pending_actions()) == 3
 
     # Reply with a new slot choice
     resp_resched = adapter.process("Friday afternoon")
@@ -311,7 +342,14 @@ def test_booking_agent_ask_then_reschedule(clean_db):
     new_holds = [a for a in pending_actions if a.tool_name == "Calendar Hold Creator" and new_code in a.payload.get("title", "")]
     assert len(new_holds) == 1
     assert new_holds[0].payload["start_time"] == resp_resched.booking.date_time
-    assert len(pending_actions) == 2
+
+    new_docs = [a for a in pending_actions if a.tool_name == "Doc Append" and new_code in a.payload.get("content", "")]
+    assert len(new_docs) == 1
+
+    new_emails = [a for a in pending_actions if a.tool_name == "Email Draft Generator" and new_code in a.payload.get("subject", "")]
+    assert len(new_emails) == 1
+
+    assert len(pending_actions) == 6
 
 # 13. While awaiting a slot choice, an unrelated/unmatched reply (e.g. noise,
 # silence, or an echo of the assistant's own prompt) must NOT silently book a

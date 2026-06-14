@@ -195,7 +195,7 @@ class BookingAgent:
             self.persistence.set(code, booking.model_dump())
             self.persistence.set("latest_booking", booking.model_dump())
             self.persistence.set("pending_booking", {})
-            self._queue_calendar_hold(booking)
+            self._queue_mcp_followups(booking, top_theme)
 
             message = (
                 f"Your appointment has been rescheduled. Old booking {old_code} is cancelled. "
@@ -215,7 +215,7 @@ class BookingAgent:
         self.persistence.set(code, booking.model_dump())
         self.persistence.set("latest_booking", booking.model_dump())
         self.persistence.set("pending_booking", {})
-        self._queue_calendar_hold(booking)
+        self._queue_mcp_followups(booking, top_theme)
 
         message = self._book_confirmation_message(new_slot, code, top_theme)
         return AgentResponse(message=message, booking=booking, booking_code=code, top_theme=top_theme)
@@ -276,7 +276,7 @@ class BookingAgent:
                 )
                 self.persistence.set(code, booking.model_dump())
                 self.persistence.set("latest_booking", booking.model_dump())
-                self._queue_calendar_hold(booking)
+                self._queue_mcp_followups(booking, top_theme)
 
                 message = self._book_confirmation_message(slot, code, top_theme)
                 return AgentResponse(message=message, booking=booking, booking_code=code, top_theme=top_theme)
@@ -360,7 +360,7 @@ class BookingAgent:
                 )
                 self.persistence.set(new_code, new_booking.model_dump())
                 self.persistence.set("latest_booking", new_booking.model_dump())
-                self._queue_calendar_hold(new_booking)
+                self._queue_mcp_followups(new_booking, top_theme)
 
                 message = (
                     f"Your appointment has been rescheduled. Old booking {code_to_reschedule} is cancelled. "
