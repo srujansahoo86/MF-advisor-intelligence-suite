@@ -464,3 +464,27 @@ def test_queue_doc_append_writes_shared_notes_entry(clean_db):
     assert "Exit Load Confusion" in payload["content"]
     assert "Many users confused about exit loads." in payload["content"]
     assert "Last checked: 2026-06-10" in payload["content"]
+
+
+# 22. _queue_email_draft queues an Email Draft Generator action for the advisor
+def test_queue_email_draft_for_booking(clean_db):
+    persistence = Persistence(clean_db)
+    agent = BookingAgent(db_path=clean_db)
+    booking = Booking(
+        booking_code="KV-TEST",
+        topic="Exit load query",
+        date_time="Monday 10:00 AM",
+        status="CONFIRMED",
+    )
+
+    agent._queue_email_draft(booking)
+
+    pending_actions = persistence.get_pending_actions()
+    email_actions = [a for a in pending_actions if a.tool_name == "Email Draft Generator"]
+    assert len(email_actions) == 1
+
+    payload = email_actions[0].payload
+    assert payload["recipient"] == "advisor@kuvera.in"
+    assert "KV-TEST" in payload["subject"]
+    assert "Exit load query" in payload["subject"]
+    assert payload["topic"] == "Exit load query"

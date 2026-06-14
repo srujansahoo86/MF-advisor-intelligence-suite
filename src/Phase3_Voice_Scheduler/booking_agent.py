@@ -131,6 +131,14 @@ class BookingAgent:
             "content": "\n".join(lines),
         })
 
+    def _queue_email_draft(self, booking: Booking) -> None:
+        """Queues an Email Draft Generator action for advisor approval."""
+        self.orchestrator.queue_action("Email Draft Generator", {
+            "recipient": "advisor@kuvera.in",
+            "subject": f"Pre-meeting brief: {booking.topic} ({booking.booking_code})",
+            "topic": booking.topic,
+        })
+
     def _finalize_pending_booking(self, pending: dict, transcript: str, top_theme: Optional[str]) -> AgentResponse:
         """Resolves the user's slot choice and completes a pending BOOK or RESCHEDULE."""
         new_slot = self.slot_manager.match_pending_reply(transcript)
