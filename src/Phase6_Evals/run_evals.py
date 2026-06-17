@@ -242,6 +242,20 @@ def main():
         print(f"  [Eval 5] ERROR: {e}")
     results.append(result5)
 
+    # ── Eval 6: Booking Confirmation MCP Follow-ups ──────────────────────
+    try:
+        from src.Phase6_Evals.eval6_booking_mcp_followups import run_eval6
+        result6 = run_eval6()
+    except Exception as e:
+        result6 = {
+            "eval_name": "Eval 6: Booking Confirmation MCP Follow-ups (Additional)",
+            "required": False,
+            "pass": False,
+            "metrics": {"error": str(e)},
+        }
+        print(f"  [Eval 6] ERROR: {e}")
+    results.append(result6)
+
     run_time = time.time() - start
 
     # ── Print summary ────────────────────────────────────────────────────
