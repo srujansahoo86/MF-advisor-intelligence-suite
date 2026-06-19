@@ -121,6 +121,10 @@
 <span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
 <span class="font-body-lg">Approval Center</span>
 </a>
+<a id="nav-sources" class="flex items-center gap-sm p-sm text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="link">link</span>
+<span class="font-body-lg">Sources</span>
+</a>
 </nav>
 <div class="mt-auto border-t border-outline/10 pt-md pb-md space-y-xs">
 <a class="flex items-center gap-sm p-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
@@ -349,6 +353,16 @@
 <button class="text-xs text-primary hover:underline transition-colors font-bold uppercase tracking-widest">Access Archive</button>
 </div>
 </section>
+<!-- 5. Sources (Full Width) -->
+<section id="section-sources" class="col-span-12 glass-panel rounded-2xl p-md shadow-lg shadow-black/5 hidden">
+<div class="flex items-center gap-xs mb-md">
+<span class="material-symbols-outlined text-primary" data-icon="link">link</span>
+<h2 class="font-title-md text-xl font-bold text-on-surface">Sources & Citations</h2>
+</div>
+<div id="sources-list" class="space-y-md">
+<p class="text-body-sm text-on-surface-variant">Loading sources...</p>
+</div>
+</section>
 </div>
 </main>
 <script>
@@ -359,14 +373,16 @@
     const navFaq = document.getElementById('nav-faq');
     const navVoice = document.getElementById('nav-voice');
     const navApproval = document.getElementById('nav-approval');
+    const navSources = document.getElementById('nav-sources');
 
     const secVoice = document.getElementById('section-voice');
     const secFaq = document.getElementById('section-faq');
     const secPulse = document.getElementById('section-pulse');
     const secApproval = document.getElementById('section-approval');
+    const secSources = document.getElementById('section-sources');
 
     function resetNavStyles() {
-        [navFaq, navVoice, navApproval].forEach(nav => {
+        [navFaq, navVoice, navApproval, navSources].forEach(nav => {
             nav.className = "flex items-center gap-sm p-sm text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-all rounded-xl";
         });
     }
@@ -383,6 +399,7 @@
         secFaq.classList.remove('hidden');
         secPulse.classList.remove('hidden');
         secApproval.classList.remove('hidden');
+        secSources.classList.add('hidden');
         resetNavStyles();
     }
 
@@ -397,6 +414,7 @@
         secPulse.classList.remove('hidden');
         secVoice.classList.add('hidden');
         secApproval.classList.add('hidden');
+        secSources.classList.add('hidden');
         setActiveNav(navFaq);
     });
 
@@ -406,6 +424,7 @@
         secFaq.classList.add('hidden');
         secPulse.classList.add('hidden');
         secApproval.classList.add('hidden');
+        secSources.classList.add('hidden');
         setActiveNav(navVoice);
     });
 
@@ -415,7 +434,19 @@
         secFaq.classList.add('hidden');
         secPulse.classList.add('hidden');
         secVoice.classList.add('hidden');
+        secSources.classList.add('hidden');
         setActiveNav(navApproval);
+    });
+
+    navSources.addEventListener('click', (e) => {
+        e.preventDefault();
+        secSources.classList.remove('hidden');
+        secFaq.classList.add('hidden');
+        secPulse.classList.add('hidden');
+        secVoice.classList.add('hidden');
+        secApproval.classList.add('hidden');
+        setActiveNav(navSources);
+        loadSources();
     });
 
 
@@ -992,6 +1023,36 @@
         } catch (err) {
             alert("Network error communicating with Approval API.");
             loadPendingActions();
+        }
+    }
+
+    // --- 5. Sources Integration ---
+    async function loadSources() {
+        const sourcesList = document.getElementById('sources-list');
+        try {
+            const res = await fetch(`${API_BASE}/api/sources`);
+            const data = await res.json();
+            if (res.status === 200 && data.sources) {
+                const groups = {};
+                data.sources.forEach(url => {
+                    let group = 'AMFI / SEBI Regulatory';
+                    if (url.includes('amc.ppfas.com')) group = 'AMC Factsheets, KIM & SID';
+                    else if (url.includes('kuvera')) group = 'Kuvera Platform Docs';
+                    (groups[group] = groups[group] || []).push(url);
+                });
+                sourcesList.innerHTML = Object.entries(groups).map(([group, urls]) => `
+                    <div>
+                        <span class="font-label-caps text-xs text-on-surface-variant block mb-sm uppercase tracking-widest">${group} (${urls.length})</span>
+                        <ul class="space-y-1">
+                            ${urls.map(u => `<li><a class="text-sm underline text-primary hover:text-primary/80 break-all" href="${u}" target="_blank">${u}</a></li>`).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+            } else {
+                sourcesList.innerHTML = `<p class="text-body-sm text-error">Failed to load sources.</p>`;
+            }
+        } catch (err) {
+            sourcesList.innerHTML = `<p class="text-body-sm text-error">Failed to load sources.</p>`;
         }
     }
 

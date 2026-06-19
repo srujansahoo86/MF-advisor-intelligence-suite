@@ -5,3 +5,29 @@ __pycache__/
 *.log
 data/test_*.db
 .worktrees/
+
+# IDE / tooling
+.claude/
+
+# Runtime database (ephemeral state)
+data/app.db
+
+# Debug scripts and scratch files in data/
+data/debug_q1.py
+data/debug_q2.py
+data/debug_q3.py
+data/incremental_indexer.py
+data/print_chunk7.py
+data/print_page2.py
+data/print_page4.py
+data/print_page20.py
+data/print_pages.py
+data/search_flexi.py
+data/search_flexi_small.py
+data/test_loader.py
+data/page*.txt
+data/eval_run_output.txt
+data/indexing.log
+
+# Scratch folder
+scratch/

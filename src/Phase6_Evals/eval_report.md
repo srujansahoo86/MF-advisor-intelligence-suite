@@ -1,8 +1,8 @@
 # FINTELLIGENCE — Eval Report
 
-**Generated:** 2026-06-18 00:45:54  
-**Total runtime:** 261.7s  
-**Overall Status:** ✅ ALL REQUIRED EVALS PASSED
+**Generated:** 2026-06-19 06:11:32  
+**Total runtime:** 326.5s  
+**Overall Status:** ❌ ONE OR MORE REQUIRED EVALS FAILED
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Eval | Required | Status |
 |------|----------|--------|
-| Eval 1: Retrieval Accuracy (RAG) | Required | ✅ PASS |
+| Eval 1: Retrieval Accuracy (RAG) | Required | ❌ FAIL |
 | Eval 2: Compliance & Safety (Adversarial) | Required | ✅ PASS |
 | Eval 3: Tone & Structure (UX) | Required | ✅ PASS |
 | Eval 4: MCP Approval Gate (Additional) | Additional | ✅ PASS |
@@ -21,28 +21,28 @@
 
 ## Required Evals
 
-### Eval 1: Retrieval Accuracy (RAG) — ✅ PASS
+### Eval 1: Retrieval Accuracy (RAG) — ❌ FAIL
 
 **Metrics:**
-- `questions_answered`: 5/5
+- `questions_answered`: 3/5
 - `graceful_degradations`: 0 (correct behavior)
-- `faithfulness_avg`: 0.84
+- `faithfulness_avg`: 0.7
 - `faithfulness_threshold`: 0.8
-- `faithfulness_pass`: True
-- `relevance_avg`: 0.96
+- `faithfulness_pass`: False
+- `relevance_avg`: 0.933
 - `relevance_threshold`: 0.8
 - `relevance_pass`: True
-- `citation_accuracy`: 5/5 answered
+- `citation_accuracy`: 3/3 answered
 - `citation_pass`: True
 
 **Per-Question Scores:**
 
 | ID | Question | Faithfulness | Relevance | Citation |
 |----|----------|:------------:|:---------:|:--------:|
-| Q1 | What is the exit load for Parag Parikh Liquid Fund?... | 1.0 | 1.0 | ✅ |
-| Q2 | What is the minimum SIP amount for Parag Parikh Flexi C... | 1.0 | 1.0 | ✅ |
+| Q1 | What is the exit load for Parag Parikh Liquid Fund?... | N/A | N/A | ❌ |
+| Q2 | What is the minimum SIP amount for Parag Parikh Flexi C... | N/A | N/A | ❌ |
 | Q3 | What does TER mean and how does it affect my returns?... | 0.8 | 1.0 | ✅ |
-| Q4 | Why is the expense ratio lower in a direct plan vs regu... | 0.9 | 1.0 | ✅ |
+| Q4 | Why is the expense ratio lower in a direct plan vs regu... | 0.8 | 1.0 | ✅ |
 | Q5 | What is the exit load and lock-in period for an ELSS fu... | 0.5 | 0.8 | ✅ |
 
 ### Eval 2: Compliance & Safety (Adversarial) — ✅ PASS
@@ -80,7 +80,7 @@
 | `fee_last_checked_format` | ✅ | last_checked='Last checked: 2026-06-13' |
 | `voice_top_theme_in_greeting` | ✅ | Top theme 'Exit Load Awareness' found in greeting: 'Many users are asking about Exit Load Awareness this week — I can book a slot for that!
 Your appoint' |
-| `voice_booking_code_format` | ✅ | booking_code='KV-BR1I', format KV-XXXX: True |
+| `voice_booking_code_format` | ✅ | booking_code='KV-B6EU', format KV-XXXX: True |
 | `mcp_email_has_context` | ✅ | Email draft has context snippet: yes (length=222) |
 
 ---
@@ -96,7 +96,7 @@ Your appoint' |
 
 | Check | Pass | Detail |
 |-------|:----:|--------|
-| `queue_is_pending` | ✅ | action_id=act-5b75, in_queue=True, file_exists_before=False |
+| `queue_is_pending` | ✅ | action_id=act-wbud, in_queue=True, file_exists_before=False |
 | `approve_executes` | ✅ | approve_success=True, file_created=True, removed_from_queue=True |
 | `reject_does_not_execute` | ✅ | reject_success=True, file_should_not_exist=True |
 | `double_approve_raises` | ✅ | ValueError raised on double-approve: True |
@@ -112,8 +112,8 @@ Your appoint' |
 |-------|:----:|--------|
 | `pulse_generated_and_persisted` | ✅ | Top theme: 'Fees and Charges' |
 | `voice_reads_top_theme` | ✅ | Theme 'Fees and Charges' in greeting: True |
-| `voice_booking_code_generated` | ✅ | booking_code='KV-Z4CW' matches KV-XXXX: True |
-| `mcp_email_queued_pending` | ✅ | action_id=act-57gp in pending queue: True |
+| `voice_booking_code_generated` | ✅ | booking_code='KV-XMVE' matches KV-XXXX: True |
+| `mcp_email_queued_pending` | ✅ | action_id=act-wpk1 in pending queue: True |
 | `mcp_email_approved_and_executed` | ✅ | approve_ok=True, email_draft_persisted=True |
 | `pipeline_integrity` | ✅ | Email body references the booking topic: True |
 
@@ -128,7 +128,7 @@ Your appoint' |
 |-------|:----:|--------|
 | `three_actions_queued` | ✅ | pending_count=3 (expected 3) |
 | `action_types_correct` | ✅ | tool_names=['Calendar Hold Creator', 'Doc Append', 'Email Draft Generator'] |
-| `payloads_have_booking_data` | ✅ | topic_found=True, code_found=True, booking_code='KV-SKZM' |
+| `payloads_have_booking_data` | ✅ | topic_found=True, code_found=True, booking_code='KV-K1IK' |
 | `calendar_hold_approved_executes` | ✅ | approve_status=success, calendar_holds_count=1 |
 | `doc_append_approved_executes` | ✅ | approve_status=success, notes_file_exists=True (./data/shared_notes.md) |
 | `email_draft_approved_executes` | ✅ | approve_status=success, email_draft_persisted=True |
