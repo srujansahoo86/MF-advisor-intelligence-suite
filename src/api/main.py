@@ -9,11 +9,24 @@ from typing import List, Optional
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.persistence import Persistence
 from src.Phase0_Shared_Foundation.schemas import Answer, PendingAction
+from src.Phase0_Shared_Foundation.guardrails import Guardrails
 from src.Phase1_FAQ_Chatbot.rag_engine import get_rag_engine
 from src.Phase3_Voice_Scheduler.voice_adapter import VoiceAdapter, AgentResponse
 from src.Phase4_MCP_Orchestration.orchestrator import MCPOrchestrator
 
+import logging
+logger = logging.getLogger(__name__)
+
 app = FastAPI(title="MF Advisor Intelligence Suite API")
+
+@app.on_event("startup")
+def warmup():
+    """Pre-load the RAG engine at startup so the first request doesn't timeout."""
+    try:
+        get_rag_engine()
+        logger.info("[startup] RAG engine loaded successfully.")
+    except Exception as e:
+        logger.warning(f"[startup] RAG engine failed to load: {e}")
 
 # Enable CORS for local UI files to make requests without cross-origin issues
 app.add_middleware(
@@ -51,10 +64,20 @@ def health_check():
 
 @app.post("/api/faq", response_model=Answer)
 def get_faq_answer(req: QueryRequest):
+    # Guardrails check first — no model loading needed
+    is_safe, refusal_msg = Guardrails.check_query(req.query)
+    if not is_safe:
+        return Answer(
+            text=refusal_msg,
+            citation_links=[],
+            is_safe=False,
+            refusal_message=refusal_msg,
+        )
     try:
         rag = get_rag_engine()
         return rag.answer_query(req.query)
     except Exception as e:
+        logger.error(f"[faq] RAG engine error: {e}")
         return Answer(
             text="Sorry, the AI service is temporarily unavailable. Please try again in a moment.",
             citation_links=[],
