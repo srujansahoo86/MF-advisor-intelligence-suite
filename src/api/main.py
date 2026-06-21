@@ -46,7 +46,8 @@ def serve_dashboard():
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    groq_set = bool(os.getenv("GROQ_API_KEY"))
+    return {"status": "healthy", "groq_key_set": groq_set}
 
 @app.post("/api/faq", response_model=Answer)
 def get_faq_answer(req: QueryRequest):
@@ -54,7 +55,11 @@ def get_faq_answer(req: QueryRequest):
         rag = get_rag_engine()
         return rag.answer_query(req.query)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return Answer(
+            text="Sorry, the AI service is temporarily unavailable. Please try again in a moment.",
+            citation_links=[],
+            is_safe=True,
+        )
 
 @app.get("/api/pulse")
 def get_weekly_pulse():
@@ -62,31 +67,34 @@ def get_weekly_pulse():
         persistence = Persistence()
         pulse = persistence.get("latest_pulse")
         if not pulse:
-            # Generate dynamically from reviews.csv if database store is empty
+            fallback_pulse = {
+                "top_themes": [
+                    {"theme_name": "Direct Plans Conversion", "description": "Many clients asking to switch regular funds to direct."}
+                ],
+                "user_quotes": ["How do I switch my regular mutual funds to direct?"],
+                "key_observation": "No reviews found in DB or CSV, loaded fallback mock pulse.",
+                "action_ideas": [
+                    "Create a one-click regular-to-direct switch button.",
+                    "Publish an educational infographic comparing Regular vs Direct TER fees.",
+                    "Add exit load tooltips inside the customer portfolio view."
+                ],
+                "word_count": 60
+            }
             csv_path = Config.REVIEWS_CSV_PATH
             if os.path.exists(csv_path):
-                from src.Phase2_Review_Intelligence.review_processor import ReviewProcessor
-                from src.Phase2_Review_Intelligence.pulse_generator import PulseGenerator
-                
-                processor = ReviewProcessor(csv_path)
-                reviews = processor.load()
-                gen = PulseGenerator()
-                pulse_obj = gen.generate(reviews)
-                pulse = pulse_obj.model_dump()
+                try:
+                    from src.Phase2_Review_Intelligence.review_processor import ReviewProcessor
+                    from src.Phase2_Review_Intelligence.pulse_generator import PulseGenerator
+
+                    processor = ReviewProcessor(csv_path)
+                    reviews = processor.load()
+                    gen = PulseGenerator()
+                    pulse_obj = gen.generate(reviews)
+                    pulse = pulse_obj.model_dump()
+                except Exception:
+                    pulse = fallback_pulse
             else:
-                pulse = {
-                    "top_themes": [
-                        {"theme_name": "Direct Plans Conversion", "description": "Many clients asking to switch regular funds to direct."}
-                    ],
-                    "user_quotes": ["How do I switch my regular mutual funds to direct?"],
-                    "key_observation": "No reviews found in DB or CSV, loaded fallback mock pulse.",
-                    "action_ideas": [
-                        "Create a one-click regular-to-direct switch button.",
-                        "Publish an educational infographic comparing Regular vs Direct TER fees.",
-                        "Add exit load tooltips inside the customer portfolio view."
-                    ],
-                    "word_count": 60
-                }
+                pulse = fallback_pulse
         return pulse
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -97,37 +105,36 @@ def get_fee_explainer():
         persistence = Persistence()
         explainer = persistence.get("latest_fee_explainer")
         if not explainer:
-            # Generate dynamically from reviews.csv if database store is empty,
-            # and refresh the FAQ retrieval corpus (M2 -> M1 refresh mechanism)
+            fallback = {
+                "bullets": [
+                    "Expense ratio (TER) is the annual fee a fund charges to cover management and operating costs.",
+                    "Direct plans have a lower expense ratio than regular plans because they cut out distributor commission.",
+                    "Exit load is a fee charged if you redeem units before a scheme's minimum holding period.",
+                    "Stamp duty of 0.005% is deducted from every mutual fund purchase, including SIP instalments.",
+                    "ELSS and other lock-in funds restrict withdrawals until the lock-in period ends.",
+                    "A lower expense ratio means more of your returns stay invested and compound over time."
+                ],
+                "source_links": [
+                    Config.FEE_EXPLAINER_AMFI_URL,
+                    Config.FEE_EXPLAINER_SEBI_URL,
+                ],
+                "last_checked": f"Last checked: {date.today().isoformat()}"
+            }
             csv_path = Config.REVIEWS_CSV_PATH
             if os.path.exists(csv_path):
-                from src.Phase2_Review_Intelligence.review_processor import ReviewProcessor
-                from src.Phase2_Review_Intelligence.fee_explainer import FeeExplainerGenerator
-                from src.Phase2_Review_Intelligence.corpus_updater import CorpusUpdater
+                try:
+                    from src.Phase2_Review_Intelligence.review_processor import ReviewProcessor
+                    from src.Phase2_Review_Intelligence.fee_explainer import FeeExplainerGenerator
 
-                processor = ReviewProcessor(csv_path)
-                reviews = processor.load()
-                gen = FeeExplainerGenerator()
-                explainer_obj = gen.generate(reviews)
-                explainer = explainer_obj.model_dump()
-
-                CorpusUpdater().add_fee_explainer(explainer_obj)
+                    processor = ReviewProcessor(csv_path)
+                    reviews = processor.load()
+                    gen = FeeExplainerGenerator()
+                    explainer_obj = gen.generate(reviews)
+                    explainer = explainer_obj.model_dump()
+                except Exception:
+                    explainer = fallback
             else:
-                explainer = {
-                    "bullets": [
-                        "Expense ratio (TER) is the annual fee a fund charges to cover management and operating costs.",
-                        "Direct plans have a lower expense ratio than regular plans because they cut out distributor commission.",
-                        "Exit load is a fee charged if you redeem units before a scheme's minimum holding period.",
-                        "Stamp duty of 0.005% is deducted from every mutual fund purchase, including SIP instalments.",
-                        "ELSS and other lock-in funds restrict withdrawals until the lock-in period ends.",
-                        "A lower expense ratio means more of your returns stay invested and compound over time."
-                    ],
-                    "source_links": [
-                        Config.FEE_EXPLAINER_AMFI_URL,
-                        Config.FEE_EXPLAINER_SEBI_URL,
-                    ],
-                    "last_checked": f"Last checked: {date.today().isoformat()}"
-                }
+                explainer = fallback
         return explainer
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
