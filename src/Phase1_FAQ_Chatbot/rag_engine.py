@@ -3,16 +3,31 @@ from functools import lru_cache
 
 from langchain_groq import ChatGroq
 from langchain_chroma import Chroma
+from langchain_core.embeddings import Embeddings
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.schemas import Answer
 from src.Phase0_Shared_Foundation.guardrails import Guardrails
 from src.Phase0_Shared_Foundation.pii import redact_pii
 
+
+class _FastEmbedWrapper(Embeddings):
+    """Thin langchain-core Embeddings wrapper around fastembed.TextEmbedding.
+    Bypasses langchain-community so it works with any fastembed version."""
+    def __init__(self, model_name: str):
+        from fastembed import TextEmbedding
+        self._model = TextEmbedding(model_name=model_name)
+
+    def embed_documents(self, texts):
+        return [list(v) for v in self._model.embed(texts)]
+
+    def embed_query(self, text: str):
+        return list(self._model.embed([text]))[0]
+
+
 class RAGEngine:
     """Core Retrieval-Augmented Generation Engine for factual FAQ."""
     def __init__(self):
-        from langchain_community.embeddings import FastEmbedEmbeddings
-        self.embeddings = FastEmbedEmbeddings(model_name=Config.EMBEDDING_MODEL)
+        self.embeddings = _FastEmbedWrapper(Config.EMBEDDING_MODEL)
         self.vectorstore = Chroma(
             persist_directory=Config.CHROMA_DB_DIR,
             embedding_function=self.embeddings,

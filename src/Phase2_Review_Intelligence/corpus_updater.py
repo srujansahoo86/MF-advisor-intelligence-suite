@@ -18,8 +18,8 @@ class CorpusUpdater:
     """
 
     def __init__(self):
-        from langchain_community.embeddings import FastEmbedEmbeddings
-        self.embeddings = FastEmbedEmbeddings(model_name=Config.EMBEDDING_MODEL)
+        from src.Phase1_FAQ_Chatbot.rag_engine import _FastEmbedWrapper
+        self.embeddings = _FastEmbedWrapper(Config.EMBEDDING_MODEL)
         self.vectorstore = Chroma(
             persist_directory=Config.CHROMA_DB_DIR,
             embedding_function=self.embeddings,
