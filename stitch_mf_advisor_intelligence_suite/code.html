@@ -206,29 +206,7 @@
 <span class="font-label-caps text-xs text-primary font-bold">AI Online</span>
 </div>
 </div>
-<div id="chat-history" class="flex-grow overflow-y-auto p-md space-y-md no-scrollbar bg-surface-container-lowest/30">
-<div class="flex flex-col gap-xs max-w-[85%]">
-<div class="p-sm glass-modal rounded-2xl rounded-tl-none text-body-lg text-on-surface shadow-sm">
-                        What is the specific regulatory requirement for disclosure of ESG ratings in client brochures for 2024?
-                    </div>
-<span class="text-[10px] text-on-surface-variant font-mono-data px-1">11:15 AM</span>
-</div>
-<div class="flex flex-col gap-xs ml-auto max-w-[85%] items-end">
-<div class="p-sm bg-primary text-on-primary rounded-2xl rounded-tr-none text-body-lg font-medium shadow-md">
-                        Under the updated BRSR Core framework, you must explicitly state the rating methodology used and provide a 3-year historical comparison.
-                    </div>
-<div class="mt-xs p-sm bg-surface-container rounded-xl border border-outline/10 text-body-sm text-on-surface-variant max-w-sm">
-<p class="font-bold text-primary mb-1">Key Compliance Points:</p>
-<ul class="list-disc ml-xs space-y-1 text-xs">
-<li>Mandatory BRSR Core reporting for top 1000 entities.</li>
-<li>Assurance required for environmental parameters.</li>
-<li>Standardized disclosure templates apply.</li>
-</ul>
-<a class="mt-sm block text-primary font-bold underline text-xs" href="#">Official Regulatory PDF (Annexure 4)</a>
-</div>
-<span class="text-[10px] text-on-surface-variant font-mono-data px-1">11:16 AM • Verified AI Response</span>
-</div>
-</div>
+<div id="chat-history" class="flex-grow overflow-y-auto p-md space-y-md no-scrollbar bg-surface-container-lowest/30"></div>
 <div class="p-md bg-surface-container-low border-t border-outline/10">
 <div class="relative flex items-center">
 <input id="chat-input" class="w-full bg-white border border-outline/20 rounded-xl py-sm pl-md pr-12 text-body-lg focus:outline-none focus:border-primary transition-all shadow-inner" placeholder="Ask about compliance, funds, or market data..." type="text"/>
@@ -1058,6 +1036,10 @@
 
     // Initialize Page Content
     window.addEventListener('DOMContentLoaded', () => {
+        const h = new Date().getHours();
+        const timeGreeting = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+        appendMessage('bot', `${timeGreeting}! I'm your Parag Parikh fund assistant. Ask me about exit loads, NAV, expense ratios, minimum SIP, SEBI compliance, or how to manage your investments on Kuvera.`);
+
         loadWeeklyPulse();
         loadFeeExplainer();
         loadPendingActions();
