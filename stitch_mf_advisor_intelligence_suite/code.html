@@ -519,6 +519,17 @@
         const rawQuery = chatInput.value.trim();
         if (!rawQuery) return;
 
+        // Greet the user based on time of day instead of passing to RAG
+        const GREETING_WORDS = /^(hi|hey|hello|good\s*(morning|afternoon|evening)|howdy|namaste|greetings|sup|yo)[\s!.?]*$/i;
+        if (GREETING_WORDS.test(rawQuery)) {
+            appendMessage('user', rawQuery);
+            chatInput.value = "";
+            const h = new Date().getHours();
+            const tod = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+            appendMessage('bot', `${tod}! How can I help you today? Feel free to ask about Parag Parikh funds — exit loads, NAV, expense ratios, SIP details, or SEBI compliance.`);
+            return;
+        }
+
         // If there's a pending clarification context (the user answered a bot question),
         // combine the clarification question + user's answer into a rich query for the LLM.
         const clarificationCtx = chatInput.dataset.clarificationContext || '';
