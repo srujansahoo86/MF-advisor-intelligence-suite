@@ -5,7 +5,7 @@ import shutil
 # Ensure the project root is in the path so imports work
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase1_FAQ_Chatbot.document_loader import DocumentLoader
@@ -28,11 +28,7 @@ def build_index():
         shutil.rmtree(Config.CHROMA_DB_DIR)
 
     print(f"Initialising real embeddings: {Config.EMBEDDING_MODEL}")
-    embeddings = HuggingFaceEmbeddings(
-        model_name=Config.EMBEDDING_MODEL,
-        model_kwargs={"device": "cpu"},
-        encode_kwargs={"normalize_embeddings": True},
-    )
+    embeddings = FastEmbedEmbeddings(model_name=Config.EMBEDDING_MODEL)
 
     print(f"Indexing {len(chunks)} chunks into ChromaDB at {Config.CHROMA_DB_DIR} in batches of 200...")
     db = Chroma(

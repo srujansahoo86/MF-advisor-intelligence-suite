@@ -2,7 +2,7 @@ import re
 from functools import lru_cache
 
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from src.Phase0_Shared_Foundation.config import Config
 from src.Phase0_Shared_Foundation.schemas import Answer
@@ -12,12 +12,7 @@ from src.Phase0_Shared_Foundation.pii import redact_pii
 class RAGEngine:
     """Core Retrieval-Augmented Generation Engine for factual FAQ."""
     def __init__(self):
-        # Real semantic embeddings — BAAI/bge-small-en-v1.5 via HuggingFace
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name=Config.EMBEDDING_MODEL,
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},
-        )
+        self.embeddings = FastEmbedEmbeddings(model_name=Config.EMBEDDING_MODEL)
         self.vectorstore = Chroma(
             persist_directory=Config.CHROMA_DB_DIR,
             embedding_function=self.embeddings,
