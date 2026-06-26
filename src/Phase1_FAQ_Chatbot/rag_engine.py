@@ -396,11 +396,14 @@ Answer:"""
         response_text = redact_pii(response_text)
         response_text = self._enforce_sentence_limit(response_text, max_sentences=3)
 
-        # Clear sources if the LLM gave a generic/conversational reply instead of a factual one
-        _generic_markers = ("verified source for that", "how can i assist", "happy to help",
-                            "please go ahead", "go ahead and ask", "what would you like",
-                            "how can i help", "feel free to ask")
-        if any(m in response_text.lower() for m in _generic_markers):
+        # Only include citations when the response contains actual numeric financial data.
+        # Generic/conversational answers never have percentages, rupee amounts, or day counts.
+        import re as _re
+        _has_numbers = bool(_re.search(
+            r'[\d.]+\s*%|₹\s*[\d,]+|\d+\s*days?|\d+\s*years?|\d+\s*basis\s*points?',
+            response_text, _re.IGNORECASE
+        ))
+        if not _has_numbers:
             sources = []
 
         return Answer(

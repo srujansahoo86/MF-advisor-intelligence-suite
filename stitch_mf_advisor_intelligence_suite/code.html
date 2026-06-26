@@ -560,9 +560,10 @@
                 } else if (data.needs_clarification) {
                     appendMessage('bot', data.text, [], data.clarification_questions);
                 } else {
-                    // Only show citations if the answer contains specific factual data
-                    // (percentages, rupee amounts, fund/regulatory names, or specific figures)
-                    const hasFacts = /[\d.]+\s*%|₹\s*[\d,]+|parag\s+parikh|sebi|amfi|exit\s+load|expense\s+ratio|nav\s+is|minimum\s+sip|lock.in/i.test(data.text);
+                    // Only show citations when the answer contains actual numeric financial data
+                    // (a percentage, a rupee amount, or a day/year count near a financial term).
+                    // Pure definitions or conversational replies never contain these patterns.
+                    const hasFacts = /[\d.]+\s*%|₹\s*[\d,]+|\d+\s*days?|\d+\s*years?|\d+\s*basis\s*points?/i.test(data.text);
                     appendMessage('bot', data.text, hasFacts ? data.citation_links : []);
                 }
             } else {
