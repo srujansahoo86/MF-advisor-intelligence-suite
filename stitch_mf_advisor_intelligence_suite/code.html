@@ -690,6 +690,8 @@
     function looksLikeEcho(transcript, spokenMessage) {
         const t = normalizeForCompare(transcript);
         const m = normalizeForCompare(spokenMessage);
+        // Short focused responses (≤4 words) are genuine barge-ins, not speaker echo
+        if (t.split(' ').length <= 4) return false;
         return t.length > 8 && m.includes(t);
     }
 
@@ -737,18 +739,34 @@
             micButton.classList.add('pulse-primary');
             micButton.classList.remove('animate-pulse', 'bg-error', 'text-on-error');
             transcriptText.classList.remove('animate-pulse');
+            // Barge-in mode: if TTS is still reading slots and the user hasn't
+            // chosen yet, keep the mic open for another barge-in attempt.
+            if (awaitingSlotChoice && window.speechSynthesis && window.speechSynthesis.speaking) {
+                restartListening(200);
+                return;
+            }
             if (voiceStatusText && sessionActive) voiceStatusText.textContent = "Status: Ready to listen";
         };
 
         recognition.onresult = async (event) => {
             const transcript = event.results[0][0].transcript;
+            const ttsStillSpeaking = window.speechSynthesis && window.speechSynthesis.speaking;
 
             if (awaitingSlotChoice && looksLikeEcho(transcript, lastSpokenMessage)) {
-                // The mic picked up the assistant's own voice, not the
-                // user's answer. Keep listening for the real slot choice.
                 transcriptText.textContent = "Still listening for your slot choice...";
-                listenAfterSpeechEnds();
+                // TTS still going — restart mic immediately for another barge-in attempt
+                if (ttsStillSpeaking) {
+                    restartListening(200);
+                } else {
+                    listenAfterSpeechEnds();
+                }
                 return;
+            }
+
+            // Genuine user input — cut off TTS immediately if still reading (barge-in)
+            if (ttsStillSpeaking) {
+                window.speechSynthesis.cancel();
+                if (voiceStatusText) voiceStatusText.textContent = "Status: Barge-in detected...";
             }
 
             awaitingSlotChoice = false;
@@ -857,8 +875,16 @@
                         awaitingSlotChoice = true;
                         lastSpokenMessage = data.message;
                         utterance.onend = () => {
-                            listenAfterSpeechEnds();
+                            // TTS finished naturally — open mic if user hasn't barged in yet
+                            if (awaitingSlotChoice) listenAfterSpeechEnds();
                         };
+                        // Open mic after a short delay so the user can barge in
+                        // while slots are still being read aloud
+                        setTimeout(() => {
+                            if (awaitingSlotChoice && !isListening) {
+                                try { recognition.start(); } catch(e) {}
+                            }
+                        }, 500);
                     } else {
                         awaitingSlotChoice = false;
                         lastSpokenMessage = "";
