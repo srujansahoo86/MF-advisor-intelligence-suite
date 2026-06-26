@@ -2,7 +2,7 @@ import os
 from datetime import date
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -49,13 +49,16 @@ def serve_dashboard():
     ui_path = os.path.join(base_dir, "stitch_mf_advisor_intelligence_suite", "code.html")
     if os.path.exists(ui_path):
         with open(ui_path, "r", encoding="utf-8") as f:
-            return f.read()
+            content = f.read()
     else:
         alt_path = "stitch_mf_advisor_intelligence_suite/code.html"
         if os.path.exists(alt_path):
             with open(alt_path, "r", encoding="utf-8") as f:
-                return f.read()
-    raise HTTPException(status_code=404, detail="Dashboard UI file not found.")
+                content = f.read()
+        else:
+            raise HTTPException(status_code=404, detail="Dashboard UI file not found.")
+    return Response(content=content, media_type="text/html",
+                    headers={"Cache-Control": "no-store, no-cache, must-revalidate"})
 
 @app.get("/health")
 def health_check():
