@@ -396,8 +396,11 @@ Answer:"""
         response_text = redact_pii(response_text)
         response_text = self._enforce_sentence_limit(response_text, max_sentences=3)
 
-        # Clear sources if the LLM admitted it didn't find the answer
-        if "verified source for that" in response_text:
+        # Clear sources if the LLM gave a generic/conversational reply instead of a factual one
+        _generic_markers = ("verified source for that", "how can i assist", "happy to help",
+                            "please go ahead", "go ahead and ask", "what would you like",
+                            "how can i help", "feel free to ask")
+        if any(m in response_text.lower() for m in _generic_markers):
             sources = []
 
         return Answer(
