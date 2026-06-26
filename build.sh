@@ -4,11 +4,10 @@ set -o errexit
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Pre-download the HuggingFace embedding model during build phase
-# so it doesn't download on the first request (which would timeout)
+# Pre-download the fastembed ONNX model during build so first request doesn't timeout
 python -c "
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 print('[build] Downloading embedding model...')
-SentenceTransformer('BAAI/bge-small-en-v1.5')
+TextEmbedding(model_name='BAAI/bge-small-en-v1.5')
 print('[build] Embedding model cached successfully.')
 "
