@@ -520,7 +520,7 @@
         if (!rawQuery) return;
 
         // Greet the user based on time of day instead of passing to RAG
-        const GREETING_WORDS = /^(hi|hey|hello|good\s*(morning|afternoon|evening)|howdy|namaste|greetings|sup|yo)[\s!.?]*$/i;
+        const GREETING_WORDS = /^(hi|hey|hello|good\s*(morning|afternoon|evening)|howdy|namaste|greetings|sup|yo|(i\s*)?(want|have|got|need)\s*(to\s*)?(ask|a)\s*(a\s*)?(question|query|doubt)|can\s+you\s+help|help\s+me|what\s+can\s+you\s+do|what\s+do\s+you\s+do)[\s!.?]*$/i;
         if (GREETING_WORDS.test(rawQuery)) {
             appendMessage('user', rawQuery);
             chatInput.value = "";
