@@ -1,7 +1,6 @@
 from datetime import date
 
 from langchain_core.documents import Document
-from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 
 from src.Phase0_Shared_Foundation.config import Config
@@ -19,6 +18,7 @@ class CorpusUpdater:
     """
 
     def __init__(self):
+        from langchain_community.embeddings import FastEmbedEmbeddings
         self.embeddings = FastEmbedEmbeddings(model_name=Config.EMBEDDING_MODEL)
         self.vectorstore = Chroma(
             persist_directory=Config.CHROMA_DB_DIR,
