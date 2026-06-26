@@ -560,7 +560,10 @@
                 } else if (data.needs_clarification) {
                     appendMessage('bot', data.text, [], data.clarification_questions);
                 } else {
-                    appendMessage('bot', data.text, data.citation_links);
+                    // Only show citations if the answer contains specific factual data
+                    // (percentages, rupee amounts, fund/regulatory names, or specific figures)
+                    const hasFacts = /[\d.]+\s*%|₹\s*[\d,]+|parag\s+parikh|sebi|amfi|exit\s+load|expense\s+ratio|nav\s+is|minimum\s+sip|lock.in/i.test(data.text);
+                    appendMessage('bot', data.text, hasFacts ? data.citation_links : []);
                 }
             } else {
                 appendMessage('bot', `Error: ${data.detail || 'Failed to get response'}`);
