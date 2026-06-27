@@ -1057,17 +1057,19 @@
             const data = await res.json();
             if (res.status === 200 && data.sources) {
                 const groups = {};
-                data.sources.forEach(url => {
-                    let group = 'AMFI / SEBI Regulatory';
-                    if (url.includes('amc.ppfas.com')) group = 'AMC Factsheets, KIM & SID';
-                    else if (url.includes('kuvera')) group = 'Kuvera Platform Docs';
-                    (groups[group] = groups[group] || []).push(url);
+                data.sources.forEach(entry => {
+                    const group = entry.source || 'Other';
+                    (groups[group] = groups[group] || []).push(entry);
                 });
-                sourcesList.innerHTML = Object.entries(groups).map(([group, urls]) => `
+                sourcesList.innerHTML = Object.entries(groups).map(([group, entries]) => `
                     <div>
-                        <span class="font-label-caps text-xs text-on-surface-variant block mb-sm uppercase tracking-widest">${group} (${urls.length})</span>
-                        <ul class="space-y-1">
-                            ${urls.map(u => `<li><a class="text-sm underline text-primary hover:text-primary/80 break-all" href="${u}" target="_blank">${u}</a></li>`).join('')}
+                        <span class="font-label-caps text-xs text-on-surface-variant block mb-sm uppercase tracking-widest">${group} (${entries.length})</span>
+                        <ul class="space-y-2">
+                            ${entries.map(e => `
+                                <li>
+                                    <a class="text-sm underline text-primary hover:text-primary/80 break-all" href="${e.url}" target="_blank">${e.description || e.url}</a>
+                                    ${e.document_type ? `<span class="ml-2 inline-block bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">${e.document_type}</span>` : ''}
+                                </li>`).join('')}
                         </ul>
                     </div>
                 `).join('');
