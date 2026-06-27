@@ -121,6 +121,7 @@ def get_weekly_pulse():
                     pulse = fallback_pulse
             else:
                 pulse = fallback_pulse
+            persistence.set("latest_pulse", pulse)
         return pulse
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -167,7 +168,7 @@ def get_fee_explainer():
 
 @app.get("/api/sources")
 def get_sources():
-    return {"sources": sorted(Config.SOURCE_MANIFEST_URLS)}
+    return {"sources": sorted(Config.SOURCE_MANIFEST, key=lambda e: (e["source"], e["url"]))}
 
 @app.post("/api/voice")
 def process_voice_transcript(req: TranscriptRequest):

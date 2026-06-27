@@ -382,10 +382,17 @@ class BookingAgent:
             })
 
             slot_list = self._slot_list_text(available)
-            ask_message = (
-                f"Here are the available appointment slots:\n{slot_list}\n"
-                "Which one would you like to move your appointment to?"
-            )
+            if top_theme:
+                ask_message = (
+                    f"Many users are asking about {top_theme} this week — happy to help reschedule for that!\n"
+                    f"Here are the available appointment slots:\n{slot_list}\n"
+                    "Which one would you like to move your appointment to?"
+                )
+            else:
+                ask_message = (
+                    f"Here are the available appointment slots:\n{slot_list}\n"
+                    "Which one would you like to move your appointment to?"
+                )
             return AgentResponse(message=ask_message, top_theme=top_theme, awaiting_response=True)
 
         elif parsed.intent == "PREPARE":

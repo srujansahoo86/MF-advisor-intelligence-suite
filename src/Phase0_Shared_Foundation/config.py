@@ -36,59 +36,252 @@ class Config:
     # Using FastEmbed default BGE model
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
     
-    # List of verified source URLs for the RAG engine
-    SOURCE_MANIFEST_URLS = [
+    # Verified source manifest with per-URL metadata for the RAG engine.
+    # Each entry: url, description, source (publisher), document_type, last_verified.
+    SOURCE_MANIFEST = [
         # --- 1. Parag Parikh Liquid Growth Direct Plan ---
-        "https://kuvera.in/mutual-funds/fund/parag-parikh-liquid-growth--PPLFGZ-GR",
-        "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
-        "https://amc.ppfas.com/downloads/parag-parikh-liquid-fund/kim-parag-parikh-liquid-fund.pdf?21052026",
-        "https://amc.ppfas.com/downloads/parag-parikh-liquid-fund/sid-parag-parikh-liquid-fund.pdf?21042026",
+        {
+            "url": "https://kuvera.in/mutual-funds/fund/parag-parikh-liquid-growth--PPLFGZ-GR",
+            "description": "Parag Parikh Liquid Fund — Direct Growth fund profile on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Fund Profile",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
+            "description": "PPFAS Mutual Fund factsheet for May 2026 (covers all schemes)",
+            "source": "PPFAS AMC",
+            "document_type": "Factsheet",
+            "last_verified": "2026-06-08",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-liquid-fund/kim-parag-parikh-liquid-fund.pdf?21052026",
+            "description": "Parag Parikh Liquid Fund — Key Information Memorandum (KIM)",
+            "source": "PPFAS AMC",
+            "document_type": "KIM",
+            "last_verified": "2026-05-21",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-liquid-fund/sid-parag-parikh-liquid-fund.pdf?21042026",
+            "description": "Parag Parikh Liquid Fund — Scheme Information Document (SID)",
+            "source": "PPFAS AMC",
+            "document_type": "SID",
+            "last_verified": "2026-04-21",
+        },
 
         # --- 2. Parag Parikh Arbitrage Growth Direct Plan ---
-        "https://kuvera.in/mutual-funds/fund/parag-parikh-arbitrage-growth--PPAFDG-GR",
-        "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
-        "https://amc.ppfas.com/downloads/parag-parikh-arbitrage-fund/kim-parag-parikh-arbitrage-fund.pdf?21052026",
-        "https://amc.ppfas.com/downloads/parag-parikh-arbitrage-fund/scheme-information-document-parag-parikh-arbitrage-fund.pdf?21042026",
+        {
+            "url": "https://kuvera.in/mutual-funds/fund/parag-parikh-arbitrage-growth--PPAFDG-GR",
+            "description": "Parag Parikh Arbitrage Fund — Direct Growth fund profile on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Fund Profile",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
+            "description": "PPFAS Mutual Fund factsheet for May 2026 — Arbitrage Fund pages",
+            "source": "PPFAS AMC",
+            "document_type": "Factsheet",
+            "last_verified": "2026-06-08",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-arbitrage-fund/kim-parag-parikh-arbitrage-fund.pdf?21052026",
+            "description": "Parag Parikh Arbitrage Fund — Key Information Memorandum (KIM)",
+            "source": "PPFAS AMC",
+            "document_type": "KIM",
+            "last_verified": "2026-05-21",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-arbitrage-fund/scheme-information-document-parag-parikh-arbitrage-fund.pdf?21042026",
+            "description": "Parag Parikh Arbitrage Fund — Scheme Information Document (SID)",
+            "source": "PPFAS AMC",
+            "document_type": "SID",
+            "last_verified": "2026-04-21",
+        },
 
         # --- 3. Parag Parikh Conservative Hybrid Growth Direct Plan ---
-        "https://kuvera.in/mutual-funds/fund/parag-parikh-conservative-hybrid-growth--PPCHFGZ-GR",
-        "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
-        "https://amc.ppfas.com/downloads/parag-parikh-conservative-hybrid-fund/kim-parag-parikh-conservative-hybrid-fund.pdf?21052026",
-        "https://amc.ppfas.com/downloads/parag-parikh-conservative-hybrid-fund/sid-parag-parikh-conservative-hybrid-fund.pdf?21042026",
+        {
+            "url": "https://kuvera.in/mutual-funds/fund/parag-parikh-conservative-hybrid-growth--PPCHFGZ-GR",
+            "description": "Parag Parikh Conservative Hybrid Fund — Direct Growth fund profile on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Fund Profile",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
+            "description": "PPFAS Mutual Fund factsheet for May 2026 — Conservative Hybrid Fund pages",
+            "source": "PPFAS AMC",
+            "document_type": "Factsheet",
+            "last_verified": "2026-06-08",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-conservative-hybrid-fund/kim-parag-parikh-conservative-hybrid-fund.pdf?21052026",
+            "description": "Parag Parikh Conservative Hybrid Fund — Key Information Memorandum (KIM)",
+            "source": "PPFAS AMC",
+            "document_type": "KIM",
+            "last_verified": "2026-05-21",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-conservative-hybrid-fund/sid-parag-parikh-conservative-hybrid-fund.pdf?21042026",
+            "description": "Parag Parikh Conservative Hybrid Fund — Scheme Information Document (SID)",
+            "source": "PPFAS AMC",
+            "document_type": "SID",
+            "last_verified": "2026-04-21",
+        },
 
         # --- 4. Parag Parikh Large Cap Growth Direct Plan ---
-        "https://kuvera.in/mutual-funds/fund/parag-parikh-large-cap-growth--PPLCFGZ-GR",
-        "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
-        "https://amc.ppfas.com/downloads/parag-parikh-large-cap-fund/kim-parag-parikh-large-cap-fund.pdf?21052026",
-        "https://amc.ppfas.com/downloads/parag-parikh-large-cap-fund/sid-parag-parikh-large-cap-fund.pdf?21042026",
+        {
+            "url": "https://kuvera.in/mutual-funds/fund/parag-parikh-large-cap-growth--PPLCFGZ-GR",
+            "description": "Parag Parikh Large Cap Fund — Direct Growth fund profile on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Fund Profile",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
+            "description": "PPFAS Mutual Fund factsheet for May 2026 — Large Cap Fund pages",
+            "source": "PPFAS AMC",
+            "document_type": "Factsheet",
+            "last_verified": "2026-06-08",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-large-cap-fund/kim-parag-parikh-large-cap-fund.pdf?21052026",
+            "description": "Parag Parikh Large Cap Fund — Key Information Memorandum (KIM)",
+            "source": "PPFAS AMC",
+            "document_type": "KIM",
+            "last_verified": "2026-05-21",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-large-cap-fund/sid-parag-parikh-large-cap-fund.pdf?21042026",
+            "description": "Parag Parikh Large Cap Fund — Scheme Information Document (SID)",
+            "source": "PPFAS AMC",
+            "document_type": "SID",
+            "last_verified": "2026-04-21",
+        },
 
         # --- 5. Parag Parikh Dynamic Asset Allocation Growth Direct Plan ---
-        "https://kuvera.in/mutual-funds/fund/parag-parikh-dynamic-asset-allocation-growth--PPDAFGZ-GR",
-        "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
-        "https://amc.ppfas.com/downloads/parag-parikh-dynamic-asset-allocation-fund/kim-parag-parikh-dynamic-asset-allocation-fund.pdf?21052026",
-        "https://amc.ppfas.com/downloads/parag-parikh-dynamic-asset-allocation-fund/sid-parag-parikh-dynamic-asset-allocation-fund.pdf?21042026",
+        {
+            "url": "https://kuvera.in/mutual-funds/fund/parag-parikh-dynamic-asset-allocation-growth--PPDAFGZ-GR",
+            "description": "Parag Parikh Dynamic Asset Allocation Fund — Direct Growth fund profile on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Fund Profile",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/factsheet/2026/ppfas-mf-factsheet-for-May-2026.pdf?08062026",
+            "description": "PPFAS Mutual Fund factsheet for May 2026 — Dynamic Asset Allocation Fund pages",
+            "source": "PPFAS AMC",
+            "document_type": "Factsheet",
+            "last_verified": "2026-06-08",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-dynamic-asset-allocation-fund/kim-parag-parikh-dynamic-asset-allocation-fund.pdf?21052026",
+            "description": "Parag Parikh Dynamic Asset Allocation Fund — Key Information Memorandum (KIM)",
+            "source": "PPFAS AMC",
+            "document_type": "KIM",
+            "last_verified": "2026-05-21",
+        },
+        {
+            "url": "https://amc.ppfas.com/downloads/parag-parikh-dynamic-asset-allocation-fund/sid-parag-parikh-dynamic-asset-allocation-fund.pdf?21042026",
+            "description": "Parag Parikh Dynamic Asset Allocation Fund — Scheme Information Document (SID)",
+            "source": "PPFAS AMC",
+            "document_type": "SID",
+            "last_verified": "2026-04-21",
+        },
 
-        # --- Kuvera Public Docs Links ---
-        "https://kuvera.freshdesk.com/support/solutions/articles/82000725676-how-do-i-get-my-capital-gains-report-for-filing-taxes-",
-        "https://kuvera.in/blog/how-to-stop-cancel-and-redeem-mutual-fund-sip-kuvera/",
-        "https://kuvera.in/blog/elss-meaning-lock-in-period-and-advantages/",
-        "https://kuvera.freshdesk.com/support/solutions/articles/82000703085-how-do-i-switch-my-regular-mutual-funds-to-direct-",
-        "https://kuvera.freshdesk.com/support/solutions/articles/82000702595-when-will-my-mutual-fund-redemption-amount-get-credited-",
+        # --- Kuvera Help Articles & Blogs ---
+        {
+            "url": "https://kuvera.freshdesk.com/support/solutions/articles/82000725676-how-do-i-get-my-capital-gains-report-for-filing-taxes-",
+            "description": "How to download a Capital Gains report for tax filing on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Help Article",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://kuvera.in/blog/how-to-stop-cancel-and-redeem-mutual-fund-sip-kuvera/",
+            "description": "Guide to stopping, cancelling, and redeeming a mutual fund SIP on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Blog",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://kuvera.in/blog/elss-meaning-lock-in-period-and-advantages/",
+            "description": "Explainer on ELSS funds: meaning, 3-year lock-in period, and tax advantages",
+            "source": "Kuvera",
+            "document_type": "Blog",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://kuvera.freshdesk.com/support/solutions/articles/82000703085-how-do-i-switch-my-regular-mutual-funds-to-direct-",
+            "description": "How to switch regular mutual fund plans to direct plans on Kuvera",
+            "source": "Kuvera",
+            "document_type": "Help Article",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://kuvera.freshdesk.com/support/solutions/articles/82000702595-when-will-my-mutual-fund-redemption-amount-get-credited-",
+            "description": "Redemption timelines: when the proceeds from a mutual fund sale are credited",
+            "source": "Kuvera",
+            "document_type": "Help Article",
+            "last_verified": "2026-06-01",
+        },
 
-        # --- SEBI / AMFI Docs Links ---
-        "https://www.sebi.gov.in/legal/master-circulars/mar-2026/master-circular-for-mutual-funds_100491.html",
-        "https://investor.sebi.gov.in/iematerial.html",
-        "https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService",
-        "https://www.amfiindia.com/uploads/AMFI_Master_Cicular_for_MF_Ds_3c7f5ee44f.pdf",
-        "https://www.amfiindia.com/Themes/Theme1/downloads/NewRuleonApplicableNAVeffectivefromFebruary12021.pdf",
-        "https://www.sebi.gov.in/sebi_data/attachdocs/1475063737177.pdf"
+        # --- SEBI Regulatory Documents ---
+        {
+            "url": "https://www.sebi.gov.in/legal/master-circulars/mar-2026/master-circular-for-mutual-funds_100491.html",
+            "description": "SEBI Master Circular for Mutual Funds (March 2026) — consolidated regulatory framework",
+            "source": "SEBI",
+            "document_type": "Regulatory Circular",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://investor.sebi.gov.in/iematerial.html",
+            "description": "SEBI investor education materials — awareness resources for retail investors",
+            "source": "SEBI",
+            "document_type": "Investor Education",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://www.sebi.gov.in/sebi_data/attachdocs/1475063737177.pdf",
+            "description": "SEBI circular on Total Expense Ratio (TER) and fee structure for mutual funds",
+            "source": "SEBI",
+            "document_type": "Regulatory Circular",
+            "last_verified": "2026-06-01",
+        },
+
+        # --- AMFI Documents ---
+        {
+            "url": "https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService",
+            "description": "AMFI Securities Market booklet — investor service and distributor guidelines",
+            "source": "AMFI",
+            "document_type": "Investor Education",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://www.amfiindia.com/uploads/AMFI_Master_Cicular_for_MF_Ds_3c7f5ee44f.pdf",
+            "description": "AMFI Master Circular for Mutual Fund Distributors",
+            "source": "AMFI",
+            "document_type": "Regulatory Circular",
+            "last_verified": "2026-06-01",
+        },
+        {
+            "url": "https://www.amfiindia.com/Themes/Theme1/downloads/NewRuleonApplicableNAVeffectivefromFebruary12021.pdf",
+            "description": "AMFI circular on applicable NAV rules for mutual fund transactions (effective Feb 2021)",
+            "source": "AMFI",
+            "document_type": "Regulatory Circular",
+            "last_verified": "2026-06-01",
+        },
     ]
+
+    # Flat URL list derived from SOURCE_MANIFEST — used by legacy callers and /api/sources.
+    SOURCE_MANIFEST_URLS = [entry["url"] for entry in SOURCE_MANIFEST]
 
 
 def _build_source_url_map():
-    """Maps local PDF filenames to their canonical public URL from SOURCE_MANIFEST_URLS."""
+    """Maps local PDF filenames to their canonical public URL from SOURCE_MANIFEST."""
     mapping = {}
-    for url in Config.SOURCE_MANIFEST_URLS:
+    for entry in Config.SOURCE_MANIFEST:
+        url = entry["url"]
         basename = url.split("?")[0].rsplit("/", 1)[-1]
         if basename.lower().endswith(".pdf"):
             mapping[basename] = url
