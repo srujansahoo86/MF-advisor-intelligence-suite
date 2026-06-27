@@ -411,16 +411,6 @@ Answer:"""
         response_text = redact_pii(response_text)
         response_text = self._enforce_sentence_limit(response_text, max_sentences=3)
 
-        # Only include citations when the response contains actual numeric financial data.
-        # Generic/conversational answers never have percentages, rupee amounts, or day counts.
-        import re as _re
-        _has_numbers = bool(_re.search(
-            r'[\d.]+\s*%|₹\s*[\d,]+|\d+\s*days?|\d+\s*years?|\d+\s*basis\s*points?',
-            response_text, _re.IGNORECASE
-        ))
-        if not _has_numbers:
-            sources = []
-
         return Answer(
             text=response_text,
             citation_links=sources

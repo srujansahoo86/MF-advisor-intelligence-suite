@@ -560,11 +560,7 @@
                 } else if (data.needs_clarification) {
                     appendMessage('bot', data.text, [], data.clarification_questions);
                 } else {
-                    // Only show citations when the answer contains actual numeric financial data
-                    // (a percentage, a rupee amount, or a day/year count near a financial term).
-                    // Pure definitions or conversational replies never contain these patterns.
-                    const hasFacts = /[\d.]+\s*%|₹\s*[\d,]+|\d+\s*days?|\d+\s*years?|\d+\s*basis\s*points?/i.test(data.text);
-                    appendMessage('bot', data.text, hasFacts ? data.citation_links : []);
+                    appendMessage('bot', data.text, data.citation_links || []);
                 }
             } else {
                 appendMessage('bot', `Error: ${data.detail || 'Failed to get response'}`);
